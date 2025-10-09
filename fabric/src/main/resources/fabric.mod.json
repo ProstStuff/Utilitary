@@ -16,13 +16,12 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.example.examplemod.ExampleMod"
+            "dev.proststuff.reconstruct_what.ReconstructWhatFabric"
+        ],
+        "client": [
+            "dev.proststuff.reconstruct_what.ReconstructWhatFabric"
         ]
     },
-    "mixins": [
-        "${mod_id}.mixins.json",
-        "${mod_id}.fabric.mixins.json"
-    ],
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",
         "fabric-api": "*",
@@ -31,6 +30,16 @@
     },
     "suggests": {
         "another-mod": "*"
+    },
+
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.discord": "https://discord.gg/u6ENkVyyd4"
+            },
+            "update_checker": false,
+            "badges": [ "library" ]
+        }
     }
 }
   
