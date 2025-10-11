@@ -3,18 +3,21 @@ package dev.proststuff.reconstruct_what.config.adapter;
 import com.google.gson.*;
 import dev.proststuff.reconstruct_what.ReconstructWhat;
 import dev.proststuff.reconstruct_what.config.instance.ConfigGroup;
-import dev.proststuff.reconstruct_what.config.instance.AbstractConfigValue;
+import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
 import dev.proststuff.reconstruct_what.config.ICanConfigure;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 
+/**
+ * I forgot what this does...
+ * Wait did I forgot I made this?
+ */
 public class ConfigHierarchyAdapter implements JsonSerializer<ICanConfigure<?>>, JsonDeserializer<ICanConfigure<?>> {
 
     @Override
     public JsonElement serialize(ICanConfigure<?> src, Type typeOfSrc, JsonSerializationContext context) {
-        if (src instanceof AbstractConfigValue<?> base) {
-            // Save only the value, not default/previous
+        if (src instanceof ConfigValue<?> base) {
             return context.serialize(base.get());
         }
 
@@ -41,9 +44,8 @@ public class ConfigHierarchyAdapter implements JsonSerializer<ICanConfigure<?>>,
             Object obj = group.get(entry.getKey());
             JsonElement value = entry.getValue();
 
-            if (obj instanceof AbstractConfigValue<?> base) {
+            if (obj instanceof ConfigValue<?> base) {
                 try {
-                    // We know the actual value type at runtime, so cast safely
                     Object val = new Gson().fromJson(value, base.get().getClass());
                     applyToBase(base, val);
                 } catch (Exception e) {
@@ -56,7 +58,7 @@ public class ConfigHierarchyAdapter implements JsonSerializer<ICanConfigure<?>>,
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void applyToBase(AbstractConfigValue<T> base, Object value) {
+    private static <T> void applyToBase(ConfigValue<T> base, Object value) {
         try {
             base.set((T) value);
         } catch (ClassCastException e) {

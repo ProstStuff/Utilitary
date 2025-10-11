@@ -14,24 +14,31 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.Minecraft;
 
 public class ReconstructWhatFabric implements ModInitializer, ClientModInitializer {
-    
+    static {
+        ReconstructWhat.init();
+    }
+
     @Override
     public void onInitialize() {
         PayloadTypeRegistry.playS2C().register(ClientBoundConfigSyncPacket.TYPE, ClientBoundConfigSyncPacket.STREAM_CODEC);
         ServerLifecycleEvents.SERVER_STARTING.register(server -> ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.SERVER, server));
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> ConfigHolder.stopWatching(ConfigHelper.ConfigType.SERVER));
-        ServerPlayerEvents.JOIN.register(RWEvents::playerJoined);
+        ServerPlayerEvents.JOIN.register(player -> {
+            if (!ClientPlayNetworking.canSend(ClientBoundConfigSyncPacket.TYPE)) {
+                ReconstructWhat.LOG.debug("Skipping config sync for {}, client missing mod '{}'", player, ReconstructWhat.ID);
+                return;
+            }
+            RWEvents.playerJoined(player);
+        });
         ClientPlayNetworking.registerGlobalReceiver(ClientBoundConfigSyncPacket.TYPE, (packet, context) -> {
             Minecraft.getInstance().execute(() -> ClientConfigHelper.receiveChunk(packet));
         });
-        ReconstructWhat.init();
+
         ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.COMMON, null);
     }
 
     @Override
     public void onInitializeClient() {
-
-
         ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.CLIENT, null);
     }
 }

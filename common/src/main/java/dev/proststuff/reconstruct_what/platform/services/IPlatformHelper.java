@@ -23,14 +23,14 @@ public interface IPlatformHelper {
 
     <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T message, T... messages);
 
-    default void syncConfigToPlayer(ServerPlayer player, String modId, JsonElement jsonData) {
+    default void syncConfigToPlayer(ServerPlayer player, String modId, String configName, JsonElement jsonData) {
         try {
             byte[] compressed = compress(jsonData.toString().getBytes(StandardCharsets.UTF_8));
 
             final int MAX_CHUNK_SIZE = 512 * 1024;
             int totalChunks = (int) Math.ceil((double) compressed.length / MAX_CHUNK_SIZE);
 
-            ReconstructWhat.LOG.info("[ConfigSync] Syncing '{}' config ({} bytes compressed, {} chunks) to {}",
+            ReconstructWhat.LOG.info("Syncing {} config ({} bytes compressed, created {} chunks) to {}",
                     modId, compressed.length, totalChunks, player.getName().getString());
 
             for (int i = 0; i < totalChunks; i++) {
@@ -40,6 +40,7 @@ public interface IPlatformHelper {
 
                 ClientBoundConfigSyncPacket packet = new ClientBoundConfigSyncPacket(
                         modId,
+                        configName,
                         i,
                         totalChunks,
                         Base64.getEncoder().encodeToString(chunk),
@@ -49,7 +50,7 @@ public interface IPlatformHelper {
             }
 
         } catch (IOException e) {
-            ReconstructWhat.LOG.error("[ConfigSync] Failed to compress config for '{}': {}", modId, e.getMessage());
+            ReconstructWhat.LOG.error("Failed to compress config for '{}': {}", modId, e.getMessage());
             e.printStackTrace();
         }
     }

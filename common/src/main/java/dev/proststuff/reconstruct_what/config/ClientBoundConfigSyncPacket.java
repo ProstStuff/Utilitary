@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ClientBoundConfigSyncPacket(
         String modId,
+        String configName,
         int index,
         int total,
         String data,
@@ -22,6 +23,8 @@ public record ClientBoundConfigSyncPacket(
     public static final StreamCodec<ByteBuf, ClientBoundConfigSyncPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,
             ClientBoundConfigSyncPacket::modId,
+            ByteBufCodecs.STRING_UTF8,
+            ClientBoundConfigSyncPacket::configName,
             ByteBufCodecs.INT,
             ClientBoundConfigSyncPacket::index,
             ByteBufCodecs.INT,

@@ -48,7 +48,7 @@ public class ConfigGroup implements ICanConfigure<ICanConfigure<?>> {
 
             if (config instanceof ConfigGroup group) {
                 json.add(entry.getKey(), group.serialize(manager));
-            } else if (config instanceof AbstractConfigValue<?> value && !value.isRuntimeOnly()) {
+            } else if (config instanceof ConfigValue<?> value && !value.isRuntimeOnly()) {
                 json.add(entry.getKey(), value.serialize(manager));
             }
         }
@@ -70,7 +70,7 @@ public class ConfigGroup implements ICanConfigure<ICanConfigure<?>> {
 
             if (config instanceof ConfigGroup group) {
                 group.deserialize(child, manager);
-            } else if (config instanceof AbstractConfigValue<?> value) {
+            } else if (config instanceof ConfigValue<?> value) {
                 value.deserialize(child, manager);
             }
         }
@@ -82,13 +82,13 @@ public class ConfigGroup implements ICanConfigure<ICanConfigure<?>> {
     }
 
     @Override
-    public void onLoad(ConfigManager configManager) {
-        entries.forEach((name, config) -> config.onLoad(configManager));
+    public void loaded(ConfigManager configManager) {
+        entries.forEach((name, config) -> config.loaded(configManager));
     }
 
     @Override
-    public void onChange() {
-        entries.forEach((name, config) -> config.onChange());
+    public void changed() {
+        entries.forEach((name, config) -> config.changed());
     }
 
     @Override

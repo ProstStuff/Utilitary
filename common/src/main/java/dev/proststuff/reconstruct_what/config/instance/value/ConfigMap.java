@@ -1,150 +1,70 @@
 package dev.proststuff.reconstruct_what.config.instance.value;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.proststuff.reconstruct_what.config.ConfigManager;
-import dev.proststuff.reconstruct_what.config.ICanConfigure;
-import dev.proststuff.reconstruct_what.config.instance.AbstractConfigValue;
-import dev.proststuff.reconstruct_what.utility.IFancyLogging;
+import dev.proststuff.reconstruct_what.config.instance.ConfigCodec;
+import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
-public class ConfigMap<K, V> extends AbstractConfigValue<Map<K, V>> {
-    public ConfigMap(String name, boolean runtimeOnly) {
-        super(name, new LinkedHashMap<>(), runtimeOnly);
+public class ConfigMap<K, V> extends ConfigValue<Map<K, V>> {
+    private final ConfigCodec<K> keyCodec;
+    private final ConfigCodec<V> valueCodec;
+
+    public ConfigMap(String name, Map<K, V> defaultValue, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec, boolean runtimeOnly) {
+        super(name, defaultValue, ConfigCodec.map(defaultValue), runtimeOnly);
+        this.keyCodec = keyCodec;
+        this.valueCodec = valueCodec;
     }
 
-    public ConfigMap(String name, Map<K, V> defaultValue, boolean runtimeOnly) {
-        super(name, defaultValue, runtimeOnly);
+    public ConfigMap(String name, Map<K, V> defaultValue, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec) {
+        this(name, defaultValue, keyCodec, valueCodec, false);
     }
 
-    public void put(K key, V value) {
-        get().put(key, value);
-        onChange();
+    public ConfigMap(String name, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec, boolean runtimeOnly) {
+        this(name, new LinkedHashMap<>(), keyCodec, valueCodec, runtimeOnly);
     }
 
-    public V get(K key) {
-        return get().get(key);
-    }
-
-    public boolean containsKey(K key) {
-        return get().containsKey(key);
-    }
-
-    public void remove(K key) {
-        get().remove(key);
-        onChange();
-    }
-
-    public void clear() {
-        get().clear();
-        onChange();
-    }
-
-    public void forEach(BiConsumer<K, V> action) {
-        get().forEach(action);
+    public ConfigMap(String name, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec) {
+        this(name, keyCodec, valueCodec, false);
     }
 
     @Override
     public JsonElement serialize(ConfigManager manager) {
-        JsonObject jsonObject = new JsonObject();
-
-        for (Map.Entry<K, V> entry : get().entrySet()) {
-            K key = entry.getKey();
-            V value = entry.getValue();
-            if (key == null) continue;
-
-            String keyStr = keyToString(key);
-
-            switch (value) {
-                case null -> {
-                    jsonObject.add(keyStr, JsonNull.INSTANCE);
-                }
-                case Number n -> jsonObject.add(keyStr, new JsonPrimitive(n));
-                case Boolean b -> jsonObject.add(keyStr, new JsonPrimitive(b));
-                case String s -> jsonObject.add(keyStr, new JsonPrimitive(s));
-                case ICanConfigure<?> configurable -> jsonObject.add(keyStr, configurable.serialize(manager));
-                default -> jsonObject.add(keyStr, new JsonPrimitive(value.toString()));
-            }
-
+        JsonObject json = new JsonObject();
+        for (Map.Entry<K, V> entry : value.entrySet()) {
+            JsonElement keyJson = keyCodec.encode(entry.getKey());
+            json.add(keyJson.getAsString(), valueCodec.encode(entry.getValue()));
         }
-
-        return jsonObject;
-    }
-
-    private String keyToString(K key) {
-        if (key instanceof String s) return s;
-        if (key instanceof Number n) return n.toString();
-        if (key instanceof Boolean b) return b.toString();
-        return String.valueOf(key);
+        return json;
     }
 
     @Override
     public void deserialize(JsonElement element, ConfigManager manager) {
-        if (element == null || !element.isJsonObject()) return;
+        if (!element.isJsonObject()) return;
         JsonObject json = element.getAsJsonObject();
 
-        Map<K, V> newMap = new LinkedHashMap<>();
-
+        Map<K, V> map = new LinkedHashMap<>();
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-            String keyStr = entry.getKey();
-            JsonElement valueEl = entry.getValue();
-
-            K key = parseKey(keyStr);
-            if (key == null) continue;
-
-            V value = parseValue(valueEl, manager);
-            if (value != null) newMap.put(key, value);
+            K key = keyCodec.decode(new JsonPrimitive(entry.getKey()));
+            V val = valueCodec.decode(entry.getValue());
+            map.put(key, val);
         }
 
-        set(newMap);
+        this.value = map;
+        setLoaded();
     }
 
-    @SuppressWarnings("unchecked")
-    private K parseKey(String keyStr) {
-        if (!getDefault().isEmpty()) {
-            K firstKey = getDefault().keySet().iterator().next();
-            if (firstKey instanceof Integer) return (K) Integer.valueOf(keyStr);
-            if (firstKey instanceof Float) return (K) Float.valueOf(keyStr);
-            if (firstKey instanceof Double) return (K) Double.valueOf(keyStr);
-            if (firstKey instanceof Boolean) return (K) Boolean.valueOf(keyStr);
-            if (firstKey instanceof String) return (K) keyStr;
-        }
-        return (K) keyStr;
+    public void put(K key, V value) {
+        this.value.put(key, value);
+        changed();
     }
 
-    @SuppressWarnings("unchecked")
-    private V parseValue(JsonElement element, ConfigManager manager) {
-        try {
-            if (!getDefault().isEmpty()) {
-                V firstValue = getDefault().values().iterator().next();
-
-                if (firstValue instanceof Integer) return (V) (Integer) element.getAsInt();
-                if (firstValue instanceof Float) return (V) (Float) element.getAsFloat();
-                if (firstValue instanceof Double) return (V) (Double) element.getAsDouble();
-                if (firstValue instanceof Boolean) return (V) (Boolean) element.getAsBoolean();
-                if (firstValue instanceof String) return (V) element.getAsString();
-
-                if (firstValue instanceof ICanConfigure<?> configurable) {
-                    configurable.deserialize(element, manager);
-                    return (V) configurable;
-                }
-            }
-
-            if (element.isJsonPrimitive()) {
-                JsonPrimitive p = element.getAsJsonPrimitive();
-                if (p.isBoolean()) return (V) (Boolean) p.getAsBoolean();
-                if (p.isNumber()) return (V) (Double) p.getAsDouble();
-                if (p.isString()) return (V) p.getAsString();
-            }
-        } catch (Exception e) {
-            manager.error(IFancyLogging.LogType.ERROR, "Failed to parse map value: {}", e);
-        }
-
-        return null;
+    public void remove(K key) {
+        this.value.remove(key);
+        changed();
     }
 }

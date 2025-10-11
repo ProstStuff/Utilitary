@@ -51,12 +51,11 @@ public class ClientConfigHelper {
                         modId, packet.total());
 
                 ConfigManager manager = ConfigManager.getManager(modId);
-                if (manager != null && manager.getServer() != null) {
-                    manager.getServer().applySynced(json, manager);
+                if (manager != null && manager.getConfig(packet.configName()) != null) {
+                    manager.getConfig(packet.configName()).applySynced(json, manager);
                 }
             } catch (Exception e) {
-                ReconstructWhat.LOG.error("Failed to decode config for '{}': {}", modId, e.getMessage());
-                e.printStackTrace();
+                ReconstructWhat.LOG.error("Failed to decode config for '{}': {}", modId, e);
             }
         }
     }

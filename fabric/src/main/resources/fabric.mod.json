@@ -20,6 +20,9 @@
         ],
         "client": [
             "dev.proststuff.reconstruct_what.ReconstructWhatFabric"
+        ],
+        "modmenu": [
+            "dev.proststuff.reconstruct_what.RWModMenu"
         ]
     },
     "depends": {

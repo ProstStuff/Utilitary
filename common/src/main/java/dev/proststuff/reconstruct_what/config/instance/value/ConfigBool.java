@@ -1,26 +1,18 @@
 package dev.proststuff.reconstruct_what.config.instance.value;
 
-import com.google.gson.JsonElement;
-import dev.proststuff.reconstruct_what.config.ConfigManager;
-import dev.proststuff.reconstruct_what.config.instance.AbstractConfigValue;
-import dev.proststuff.reconstruct_what.utility.IFancyLogging;
+import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
+import dev.proststuff.reconstruct_what.config.instance.ConfigCodecs;
 
-public class ConfigBool extends AbstractConfigValue<Boolean> {
+public class ConfigBool extends ConfigValue<Boolean> {
     public ConfigBool(String name, Boolean value, boolean runtimeOnly) {
-        super(name, value, runtimeOnly);
+        super(name, value, ConfigCodecs.BOOL, runtimeOnly);
+    }
+
+    public ConfigBool(String name, Boolean value) {
+        super(name, value, ConfigCodecs.BOOL, false);
     }
 
     public void toggle() {
         this.set(!this.get());
-    }
-
-    @Override
-    public void deserialize(JsonElement element, ConfigManager manager) {
-        try {
-            this.set(element.getAsBoolean());
-        } catch (Exception e) {
-            this.setDefault();
-            manager.warn(IFancyLogging.LogType.WARN, "Exception found. Fallback {} value to default.", this.defaultValue.getClass().getName());
-        }
     }
 }
