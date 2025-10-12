@@ -51,7 +51,7 @@ static {
   ConfigHolder STARTUP = MANAGER.getStartup().add(RECONSTRUCT_WHAT);
 
   // Register onLoad listener
-  STARTUP.onLoaded(manager -> {
+  STARTUP.deserialized(manager -> {
       // Do something when loaded
   });
     
