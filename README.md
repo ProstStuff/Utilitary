@@ -29,7 +29,7 @@ I can't find a good config library, so I made my own.
    - Every `ConfigManager` get their own folder according to their names
     - (`config/arthritis/`, `config/TheCoolerArcheries/`)
   - `ConfigHolder` also get their own file and stored to their `ConfigManager` folder
-    - (`config/arthriits/hardmodes.json`, `WORLD/serverconfig/TheCoolerArcheries/Bows&Gun.json`).
+    - (`config/arthrits/hardmodes.json`, `WORLD/serverconfig/TheCoolerArcheries/Bows&Gun.json`).
 - Nesting group
   - Use `ConfigGroup` to group values together to make them neatly packed
     - Can also nest another `ConfigGroup`
