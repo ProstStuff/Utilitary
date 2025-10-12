@@ -30,18 +30,18 @@ public class ConfigValue<T> implements ICanConfigure<T> {
     }
 
     public T set(T newValue) {
-        T prev = this.get();
+        T prev = value;
         this.previous_value = prev;
         this.value = newValue;
         return prev;
     }
 
     public T setDefault() {
-        return set(this.default_value);
+        return set(default_value);
     }
 
     public T undo() {
-        return set(this.previous_value);
+        return set(previous_value);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ConfigValue<T> implements ICanConfigure<T> {
         try {
             return codec.encode(value);
         } catch (Exception e) {
-            manager.warn(IFancyLogging.LogType.WARN, "Serialization failed for {}: {}", name, e.getMessage());
+            manager.warn(IFancyLogging.LogType.WARN, "Unable to serialize config value {}, serializing default: {}", name, e.getMessage());
             return codec.encode(default_value);
         }
     }
@@ -60,7 +60,7 @@ public class ConfigValue<T> implements ICanConfigure<T> {
             value = codec.decode(element);
             setLoaded();
         } catch (Exception e) {
-            manager.warn(IFancyLogging.LogType.WARN, "Deserialization failed for {}: {}", name, e.getMessage());
+            manager.warn(IFancyLogging.LogType.WARN, "Unable to deserialize config value {}, using defaults: {}", name, e.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public class ConfigValue<T> implements ICanConfigure<T> {
 
     public String getName() { return name; }
     public T get() { return value; }
-    public T getDefault() { return this.default_value; }
+    public T getDefault() { return default_value; }
     public T getPrevious() { return previous_value; }
     public boolean wasLoaded() { return loaded; }
     public boolean isRuntimeOnly() { return this.runtimeOnly; }

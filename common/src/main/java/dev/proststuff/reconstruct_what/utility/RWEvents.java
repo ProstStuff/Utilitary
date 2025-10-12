@@ -13,8 +13,4 @@ public class RWEvents {
             manager.syncToPlayer(player);
         }
     }
-
-    public static void RegisterRWConfiguration(ConfigManager manager) {
-
-    }
 }

@@ -42,6 +42,8 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
     private Consumer<ConfigManager> preSave;
     private Consumer<ConfigManager> postSave;
 
+    private boolean initialized = false;
+
     public ConfigHolder(String name, ConfigHelper.ConfigType type) {
         this.name = name;
         this.type = type;
@@ -93,6 +95,8 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
     }
 
     public void save(Path path, ConfigManager manager) {
+        this.initialized = true;
+
         this.path = path;
         preSave(manager);
         try (Writer writer = Files.newBufferedWriter(path)) {
@@ -110,6 +114,8 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
     }
 
     public void load(Path path, ConfigManager manager) {
+        this.initialized = true;
+
         synchronized (CONFIG_LOCK) {
             this.path = path;
 
@@ -137,6 +143,10 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
                 save(path, manager);
             }
         }
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 
     private void mergeDefaults() {

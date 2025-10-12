@@ -32,6 +32,7 @@ public class RWConfigExample {
     public static final ConfigHolder CLIENT;
     public static final ConfigHolder CUSTOM;
 
+    public static final ConfigBool DEBUG;
     public static final ConfigList<String> RECONSTRUCT_WHAT;
 
     public static final ConfigBool COMMON_ENABLED;
@@ -63,9 +64,10 @@ public class RWConfigExample {
         ns.put(UUID.nameUUIDFromBytes("Arthritis always come back".getBytes()), -0.1);
 
         MANAGER = new ConfigManager(ReconstructWhat.ID, true, true, true, true)
-                .makeConfig("minecraft", ConfigHelper.ConfigType.COMMON);
-        MANAGER.DEBUG = true;
+                .newConfig("minecraft", ConfigHelper.ConfigType.COMMON);
+        MANAGER.DEBUG = ReconstructWhat.getPlatform().isDevelopmentEnvironment();
 
+        DEBUG = new ConfigBool("debug", false);
         RECONSTRUCT_WHAT = new ConfigList<>("unknown", List.of(
                 "It is so dead as it possibly could ever be,",
                 "and people are still like",
@@ -81,10 +83,11 @@ public class RWConfigExample {
         ), ConfigCodecs.STRING);
 
         // Make sure you have `startup` config created
-        STARTUP = MANAGER.getStartup().add(RECONSTRUCT_WHAT);
+        STARTUP = MANAGER.getStartup().add(DEBUG).add(RECONSTRUCT_WHAT);
 
         // Register listener
         STARTUP.onLoaded(manager -> {
+            manager.DEBUG = DEBUG.get();
             for (String string : RECONSTRUCT_WHAT.get()) {
                 manager.info(IFancyLogging.LogType.ACTION, string);
             }

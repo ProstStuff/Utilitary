@@ -44,10 +44,10 @@ public class ConfigManager implements IFancyLogging {
     public ConfigManager(String name, boolean startup, boolean common, boolean client, boolean server) {
         this(name);
 
-        if (startup) this.makeConfig("startup", ConfigHelper.ConfigType.STARTUP);
-        if (common) this.makeConfig("common", ConfigHelper.ConfigType.COMMON);
-        if (client) this.makeConfig("client", ConfigHelper.ConfigType.CLIENT);
-        if (server) this.makeConfig("server", ConfigHelper.ConfigType.SERVER);
+        if (startup) this.newConfig("startup", ConfigHelper.ConfigType.STARTUP);
+        if (common) this.newConfig("common", ConfigHelper.ConfigType.COMMON);
+        if (client) this.newConfig("client", ConfigHelper.ConfigType.CLIENT);
+        if (server) this.newConfig("server", ConfigHelper.ConfigType.SERVER);
     }
 
     public static void loadAll(ConfigHelper.ConfigType type, @Nullable MinecraftServer server, boolean saveLater) {
@@ -122,7 +122,7 @@ public class ConfigManager implements IFancyLogging {
         config.save(path.resolve(config.getName() + ".json"), this);
     }
 
-    public ConfigManager makeConfig(String name, ConfigHelper.ConfigType type) {
+    public ConfigManager newConfig(String name, ConfigHelper.ConfigType type) {
         if (configurations.get(name) != null) {
             throw new IllegalStateException("Duplicated configuration name. '" + name + "' already exist.");
         }
@@ -166,6 +166,11 @@ public class ConfigManager implements IFancyLogging {
 
     public ConfigHolder getServer() {
         return server;
+    }
+
+    @Override
+    public boolean canPrint() {
+        return this.DEBUG;
     }
 
     public Path getConfigPath() {
