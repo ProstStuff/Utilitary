@@ -45,4 +45,36 @@ public class ConfigCodecs {
             },
             json -> new Vec3(json.getAsJsonArray().get(0).getAsFloat(), json.getAsJsonArray().get(1).getAsFloat(), json.getAsJsonArray().get(2).getAsFloat())
     );
+
+    public static ConfigCodec<Long> TIME = ConfigCodec.of(
+            ms -> {
+                long h = ms / 3600000;
+                long m = (ms % 360000) / 60000;
+                long s = (ms % 60000) / 1000;
+
+                StringBuilder builder = new StringBuilder();
+                if (h > 0) builder.append(h).append("h ");
+                if (m > 0) builder.append(m).append("m ");
+                if (s > 0 || builder.isEmpty()) builder.append(s).append("s");
+                return new JsonPrimitive(builder.toString().trim());
+            },
+            json -> {
+                String str = json.getAsString().trim();
+
+                try {
+                    long total = 0L;
+
+                    for (String part: str.split("\\s+")) {
+                        if (part.endsWith("h")) total += Long.parseLong(part.replaceFirst("h", "")) * 3600000L;
+                        else if (part.endsWith("m")) total += Long.parseLong(part.replaceFirst("m", "")) * 60000L;
+                        else if (part.endsWith("s")) total += Long.parseLong(part.replaceFirst("s", "")) * 1000L;
+                        else if (part.endsWith("ms")) total += Long.parseLong(part.replaceFirst("ms", ""));
+                    }
+
+                    return total;
+                } catch (NumberFormatException e) {
+                    throw e;
+                }
+            }
+    );
 }

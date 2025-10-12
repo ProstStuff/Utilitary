@@ -5,22 +5,23 @@ THERE'S NOTHING LEFT!
 
 RECONSTRUCT WHAT is an over-engineered Minecraft Json-based config library, while remain optimized... I think...
 
-## Why use this mod?
-To be honest I don't encourage you to use this library really,
-there are some better config library,
-I just can't find a good one, so I'm making my own.
+## Why make this mod?
+I can't find a good config library, so I made my own.   
+-Almost every modders ever...
 
 ### Features
-- Expandable `ConfigValue`
+- Extensible `ConfigValue`
   - Can be extended for more compatibility between other objects
   - Use custom codec, allowing full control over serialization and deserialization
   - Premade `ConfigValue`:
     - Basic types (booleans, integers, doubles, longs, strings)
     - Color
     - Enum
+    - Keybind
     - List
     - Map
     - ResourceLocation
+    - Time
     - UUID
     - Vec2 & Vec3
 - Multi-configuration files
@@ -35,8 +36,6 @@ I just can't find a good one, so I'm making my own.
     - ^ Please do not create singularity from this, no preventive measure has been made as of current version
 - Automated syncing & initialization
   - Common, client, and server configs are initialized automatically by the library
-    - ^ There is a slim chance that your configs registered late, it is low but never zero.
-  - Your `ConfigManager` and its instances must be initialized first
   - Common and server configs are synced to the client
     - Compress and split large data into chunks
   - Detects external changes during runtime
@@ -46,8 +45,8 @@ I just can't find a good one, so I'm making my own.
 - Startup config must be loaded manually
 ```java
 static {
-  // Make sure you have `startup` config created
-  // from `.makeConfig("startup", ConfigHelper.ConfigType.STARTUP)`
+  // Make sure you have a config with `ConfigHelper.ConfigType.STARTUP` type created
+  // from `.newConfig("startup", ConfigHelper.ConfigType.STARTUP)`
   // or `new ConfigManager(MOD_NAME, true, ...)`
   ConfigHolder STARTUP = MANAGER.getStartup().add(RECONSTRUCT_WHAT);
 
