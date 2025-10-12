@@ -4,12 +4,12 @@ import dev.proststuff.reconstruct_what.config.instance.ConfigCodecs;
 import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
 
 public class ConfigString extends ConfigValue<String> {
-    public ConfigString(String name, String defaultValue, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodecs.STRING, runtimeOnly);
+    public ConfigString(String name, String str, boolean runtimeOnly) {
+        super(name, str, ConfigCodecs.STRING, runtimeOnly);
     }
 
-    public ConfigString(String name, String defaultValue) {
-        this(name, defaultValue, false);
+    public ConfigString(String name, String str) {
+        this(name, str, false);
     }
 
     public ConfigString(String name, boolean runtimeOnly) {
@@ -20,7 +20,5 @@ public class ConfigString extends ConfigValue<String> {
         this(name, false);
     }
 
-    public boolean isEmpty() {
-        return this.get() == null || get().isEmpty();
-    }
+    public boolean isEmpty() {return this.get() == null || get().isEmpty();}
 }

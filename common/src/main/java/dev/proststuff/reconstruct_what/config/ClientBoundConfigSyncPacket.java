@@ -1,7 +1,7 @@
 package dev.proststuff.reconstruct_what.config;
 
 import dev.proststuff.reconstruct_what.ReconstructWhat;
-import dev.proststuff.reconstruct_what.client.ClientConfigHelper;
+import dev.proststuff.reconstruct_what.client.ClientConfigSync;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -37,7 +37,7 @@ public record ClientBoundConfigSyncPacket(
     );
 
     public void handle(ClientLevel level, Minecraft mc) {
-        ClientConfigHelper.receiveChunk(this);
+        ClientConfigSync.receiveChunk(this);
     }
 
     @Override

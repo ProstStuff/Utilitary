@@ -46,8 +46,10 @@ public class RWConfigExample {
     public static final ConfigMap<UUID, Double> CONFIG_MAP;
 
     public static final ConfigColor COLOR;
+    public static final ConfigKeybind KEYBIND;
     public static final ConfigResourceLocation LOC;
     public static final ConfigUUID UUID_VALUE;
+    public static final ConfigTime TIME;
     public static final ConfigVec2 VEC2;
     public static final ConfigVec3 VEC3;
 
@@ -64,7 +66,7 @@ public class RWConfigExample {
         ns.put(UUID.nameUUIDFromBytes("Arthritis always come back".getBytes()), -0.1);
 
         MANAGER = new ConfigManager(ReconstructWhat.ID, true, true, true, true)
-                .newConfig("minecraft", ConfigHelper.ConfigType.COMMON);
+                .newConfig("custom", ConfigHelper.ConfigType.COMMON);
         MANAGER.DEBUG = ReconstructWhat.getPlatform().isDevelopmentEnvironment();
 
         DEBUG = new ConfigBool("debug", false);
@@ -82,11 +84,9 @@ public class RWConfigExample {
                 "THERE IS NOTHING LEFT"
         ), ConfigCodecs.STRING);
 
-        // Make sure you have `startup` config created
         STARTUP = MANAGER.getStartup().add(DEBUG).add(RECONSTRUCT_WHAT);
-
-        // Register listener
-        STARTUP.onLoaded(manager -> {
+        
+        STARTUP.deserialized(manager -> {
             manager.DEBUG = DEBUG.get();
             for (String string : RECONSTRUCT_WHAT.get()) {
                 manager.info(IFancyLogging.LogType.ACTION, string);
@@ -94,7 +94,8 @@ public class RWConfigExample {
         });
 
         MANAGER.loadSpecific(ConfigHelper.ConfigType.STARTUP, null, true);
-
+        // All startup config should be loaded after this
+        
         COMMON_ENABLED = new ConfigBool("bool", true);
         INT_NUMBER = new ConfigInt("integer", 123);
         DOUBLE_NUMBER = new ConfigDouble("double", Math.PI);
@@ -121,14 +122,17 @@ public class RWConfigExample {
                 .add(CONFIG_MAP);
 
         COLOR = new ConfigColor("color", new Color(12, 24, 25));
+        KEYBIND = new ConfigKeybind("keybind", "e");
         LOC = new ConfigResourceLocation("location", ReconstructWhat.id("there_is_nothing_left"));
         UUID_VALUE = new ConfigUUID("uuid", UUID.nameUUIDFromBytes(ReconstructWhat.ID.getBytes()));
+        TIME = new ConfigTime("time", 12000L);
         VEC2 = new ConfigVec2("vector2");
         VEC3 = new ConfigVec3("vector3", new Vec3(1, 2, 3), true); // runtime-only
 
-        CUSTOM = MANAGER.getConfig("minecraft")
+        CUSTOM = MANAGER.getConfig("custom")
                 .add(LOC)
                 .add(UUID_VALUE)
+                .add(TIME)
                 .add(VEC2)
                 .add(VEC3)
                 .add(COLOR);

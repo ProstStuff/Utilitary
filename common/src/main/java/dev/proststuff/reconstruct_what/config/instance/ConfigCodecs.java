@@ -16,13 +16,11 @@ public class ConfigCodecs {
     public static final ConfigCodec<Long> LONG = ConfigCodec.of(JsonPrimitive::new, JsonElement::getAsLong);
     public static final ConfigCodec<Double> DOUBLE = ConfigCodec.of(JsonPrimitive::new, JsonElement::getAsDouble);
     public static final ConfigCodec<String> STRING = ConfigCodec.of(JsonPrimitive::new, JsonElement::getAsString);
+
     public static final ConfigCodec<UUID> UUID = ConfigCodec.of(u -> new JsonPrimitive(u.toString()), e -> java.util.UUID.fromString(e.getAsString()));
-    public static final ConfigCodec<ResourceLocation> RESOURCE_LOCATION = ConfigCodec.of(
-            rl -> new JsonPrimitive(rl.toString()), e -> ResourceLocation.tryParse(e.getAsString()));
-    public static final ConfigCodec<Color> COLOR = ConfigCodec.of(
-            c -> new JsonPrimitive(String.format("#%06X", c.getRGB() & 0xFFFFFF)),
-            e -> Color.decode(e.getAsString())
-    );
+    public static final ConfigCodec<ResourceLocation> RESOURCE_LOCATION = ConfigCodec.of(rl -> new JsonPrimitive(rl.toString()), e -> ResourceLocation.tryParse(e.getAsString()));
+    public static final ConfigCodec<Color> COLOR = ConfigCodec.of(c -> new JsonPrimitive(String.format("#%06X", c.getRGB() & 0xFFFFFF)), e -> Color.decode(e.getAsString()));
+
     public static ConfigCodec<Vec2> VEC2 = ConfigCodec.of(
             e -> {
                 JsonArray v = new JsonArray(2);
@@ -60,21 +58,16 @@ public class ConfigCodecs {
             },
             json -> {
                 String str = json.getAsString().trim();
+                long total = 0L;
 
-                try {
-                    long total = 0L;
-
-                    for (String part: str.split("\\s+")) {
-                        if (part.endsWith("h")) total += Long.parseLong(part.replaceFirst("h", "")) * 3600000L;
-                        else if (part.endsWith("m")) total += Long.parseLong(part.replaceFirst("m", "")) * 60000L;
-                        else if (part.endsWith("s")) total += Long.parseLong(part.replaceFirst("s", "")) * 1000L;
-                        else if (part.endsWith("ms")) total += Long.parseLong(part.replaceFirst("ms", ""));
-                    }
-
-                    return total;
-                } catch (NumberFormatException e) {
-                    throw e;
+                for (String part: str.split("\\s+")) {
+                    if (part.endsWith("h")) total += Long.parseLong(part.replaceFirst("h", "")) * 3600000L;
+                    else if (part.endsWith("m")) total += Long.parseLong(part.replaceFirst("m", "")) * 60000L;
+                    else if (part.endsWith("s")) total += Long.parseLong(part.replaceFirst("s", "")) * 1000L;
+                    else if (part.endsWith("ms")) total += Long.parseLong(part.replaceFirst("ms", ""));
                 }
+
+                return total;
             }
     );
 }

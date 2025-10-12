@@ -5,12 +5,12 @@ import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
 import net.minecraft.world.phys.Vec2;
 
 public class ConfigVec2 extends ConfigValue<Vec2> {
-    public ConfigVec2(String name, Vec2 defaultValue, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodecs.VEC2, runtimeOnly);
+    public ConfigVec2(String name, Vec2 vec2, boolean runtimeOnly) {
+        super(name, vec2, ConfigCodecs.VEC2, runtimeOnly);
     }
 
-    public ConfigVec2(String name, Vec2 defaultValue) {
-        this(name, defaultValue, false);
+    public ConfigVec2(String name, Vec2 vec2) {
+        this(name, vec2, false);
     }
 
     public ConfigVec2(String name, boolean runtimeOnly) {

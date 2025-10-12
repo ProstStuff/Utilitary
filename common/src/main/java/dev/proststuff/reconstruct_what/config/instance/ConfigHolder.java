@@ -25,7 +25,10 @@ import java.util.function.Consumer;
 @SuppressWarnings("unchecked")
 public class ConfigHolder implements ICanConfigure<ConfigGroup> {
     private static final IPlatformHelper PLATFORM = ReconstructWhat.getPlatform();
-    private static final Object CONFIG_LOCK = new Object();
+    private static final Object config_lock = new Object();
+    private static final Map<Path, ConfigHolder> watchedConfigs = new HashMap<>();
+    private static WatchService watchService;
+    private static ExecutorService watcherExecutor;
 
     private final String name;
     private final ConfigGroup rootGroup;
@@ -33,14 +36,10 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
     private Path path;
     private final boolean syncToClient;
 
-    private static final Map<Path, ConfigHolder> watchedConfigs = new HashMap<>();
-    private static WatchService watchService;
-    private static ExecutorService watcherExecutor;
-
-    private Consumer<ConfigManager> loaded;
-    private Consumer<ConfigHelper.ConfigType> changed;
-    private Consumer<ConfigManager> preSave;
-    private Consumer<ConfigManager> postSave;
+    private Consumer<ConfigManager> serializingEvent;
+    private Consumer<ConfigManager> serializedEvent;
+    private Consumer<ConfigManager> deserializingEvent;
+    private Consumer<ConfigManager> deserializedEvent;
 
     private boolean initialized = false;
 
@@ -51,72 +50,34 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
         this.rootGroup = new ConfigGroup(this.name);
     }
 
-    public void onLoaded(Consumer<ConfigManager> loaded) {
-        this.loaded = loaded;
-    }
-
-    public void onChanged(Consumer<ConfigHelper.ConfigType> changed) {
-        this.changed = changed;
-    }
-
-    public void onPreSave(Consumer<ConfigManager> preSave) {
-        this.preSave = preSave;
-    }
-
-    public void onPostSave(Consumer<ConfigManager> postSave) {
-        this.postSave = postSave;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public ConfigGroup get() {
-        return this.rootGroup;
-    }
-
-    public ICanConfigure<?> get(String name) {
-        return this.rootGroup.get(name);
-    }
-
-    public ConfigHelper.ConfigType getType() {
-        return this.type;
-    }
-
     public <T extends ICanConfigure<?>> ConfigHolder add(T entry) {
         rootGroup.add(entry);
         return this;
     }
 
-    public boolean shouldSync() {
-        return this.syncToClient;
-    }
+    public boolean shouldSync() {return this.syncToClient;}
 
     public void save(Path path, ConfigManager manager) {
         this.initialized = true;
-
         this.path = path;
-        preSave(manager);
+
         try (Writer writer = Files.newBufferedWriter(path)) {
-            rootGroup.preSave(manager);
 
             JsonObject serialized = serialize(manager).getAsJsonObject();
             ConfigHelper.GSON.toJson(serialized, writer);
-
-            rootGroup.postSave(manager);
             manager.info(IFancyLogging.LogType.DONE, "Saved '{}' config for {} to {}", name, manager.NAME, path.toAbsolutePath());
         } catch (IOException e) {
             manager.error(IFancyLogging.LogType.ERROR, "Unable to save {} {} config: {}", manager.NAME, name, e);
         }
-        postSave(manager);
+
+        rootGroup.serialized(manager);
     }
 
     public void load(Path path, ConfigManager manager) {
         this.initialized = true;
+        this.path = path;
 
-        synchronized (CONFIG_LOCK) {
+        synchronized (config_lock) {
             this.path = path;
 
             boolean exists = Files.exists(path);
@@ -133,8 +94,6 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
                     manager.error(IFancyLogging.LogType.ERROR, "Unable to load {} {} config: {}", manager.NAME, name, e);
                     shouldSave = true;
                 }
-
-                loaded(manager);
             }
 
             mergeDefaults();
@@ -143,15 +102,13 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
                 save(path, manager);
             }
         }
+
+        rootGroup.deserialized(manager);
     }
 
-    public boolean isInitialized() {
-        return initialized;
-    }
+    public boolean isInitialized() {return initialized;}
 
-    private void mergeDefaults() {
-        mergeGroupDefaults(rootGroup);
-    }
+    private void mergeDefaults() {mergeGroupDefaults(rootGroup);}
 
     private void mergeGroupDefaults(ConfigGroup group) {
         group.getEntries().forEach((key, entry) -> {
@@ -163,50 +120,54 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
         });
     }
 
-    private static <T> void safeSet(ConfigValue<T> configValue) {
-        if (configValue.get() == null) configValue.set(configValue.getDefault());
-    }
+    private static <T> void safeSet(ConfigValue<T> configValue) {if (configValue.get() == null) configValue.set(configValue.getDefault());}
 
     @Override
     public JsonElement serialize(ConfigManager manager) {
+        rootGroup.serializing(manager);
         return rootGroup.serialize(manager);
     }
 
     @Override
     public void deserialize(JsonElement element, ConfigManager manager) {
+        rootGroup.deserializing(manager);
         if (element.isJsonObject()) {
             rootGroup.deserialize(element.getAsJsonObject(), manager);
         }
     }
 
     @Override
-    public void loaded(ConfigManager configManager) {
-        if (this.loaded != null) {
-            this.loaded.accept(configManager);
-        }
-        changed();
+    public String getName() {return this.name;}
+    @Override
+    public ConfigGroup get() {return this.rootGroup;}
+    public void serializing(Consumer<ConfigManager> event) {this.serializingEvent = event;}
+    public void serialized(Consumer<ConfigManager> event) {this.serializedEvent = event;}
+    public void deserializing(Consumer<ConfigManager> event) {this.deserializingEvent = event;}
+    public void deserialized(Consumer<ConfigManager> event) {this.deserializedEvent = event;}
+    public ICanConfigure<?> get(String name) {return this.rootGroup.get(name);}
+    public ConfigHelper.ConfigType getType() {return this.type;}
+
+    @Override
+    public void serializing(ConfigManager configManager) {
+        if (this.serializingEvent != null) this.serializingEvent.accept(configManager);
+        rootGroup.serializing(configManager);
     }
 
     @Override
-    public void changed() {
-        if (this.changed != null) {
-            this.changed.accept(type);
-        }
+    public void serialized(ConfigManager configManager) {if (this.serializedEvent != null) this.serializedEvent.accept(configManager);
+        rootGroup.serialized(configManager);
     }
 
     @Override
-    public void preSave(ConfigManager configManager) {
-        if (this.preSave != null) {
-            this.preSave.accept(configManager);
-        }
+    public void deserializing(ConfigManager configManager) {
+        if (this.deserializingEvent != null) this.deserializingEvent.accept(configManager);
+        rootGroup.deserializing(configManager);
     }
 
     @Override
-    public void postSave(ConfigManager configManager) {
-        if (this.postSave != null) {
-            this.postSave.accept(configManager);
-        }
-        changed();
+    public void deserialized(ConfigManager configManager) {
+        if (this.deserializedEvent != null) this.deserializedEvent.accept(configManager);
+        rootGroup.deserialized(configManager);
     }
 
     public void syncToClient(ServerPlayer player, ConfigManager manager) {
@@ -222,7 +183,6 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
     public void applySynced(JsonObject json, ConfigManager manager) {
         manager.info(IFancyLogging.LogType.ACTION, "Received synced '{}' config", name);
         deserialize(json, manager);
-        changed();
     }
 
     public void registerWatch(Path configPath, ConfigManager configManager) {
@@ -272,7 +232,6 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
                                     configManager.info(IFancyLogging.LogType.ACTION,
                                             "Detected {} config changes", configHolder.getName());
                                     configHolder.load(configHolder.path, configManager);
-                                    configHolder.changed();
                                 }
                             }
                         });

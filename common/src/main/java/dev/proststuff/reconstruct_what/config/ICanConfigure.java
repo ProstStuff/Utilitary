@@ -7,10 +7,10 @@ public interface ICanConfigure<T> {
     String getName();
     T get();
 
-    default void loaded(ConfigManager configManager){} // Called when value is loaded/reloaded.
-    default void changed(){} // Called when value is modified.
-    default void preSave(ConfigManager configManager){} // Value can be modified before saving.
-    default void postSave(ConfigManager configManager){} // Value is already modified.
+    default void serializing(ConfigManager configManager) {}
+    default void serialized(ConfigManager configManager) {}
+    default void deserializing(ConfigManager configManager) {}
+    default void deserialized(ConfigManager configManager) {}
 
     JsonElement serialize(ConfigManager manager);
     void deserialize(JsonElement element, ConfigManager manager);

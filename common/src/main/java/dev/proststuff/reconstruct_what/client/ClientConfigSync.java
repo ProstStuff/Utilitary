@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
-public class ClientConfigHelper {
+public class ClientConfigSync {
     private static final Map<String, List<String>> pendingChunks = new HashMap<>();
     private static final Map<String, Long> chunkTimestamps = new HashMap<>();
     private static final long TIMEOUT_MS = 30_000;
@@ -25,7 +25,7 @@ public class ClientConfigHelper {
             Thread t = new Thread(r, "ConfigSyncCleaner");
             t.setDaemon(true);
             return t;
-        }).scheduleAtFixedRate(ClientConfigHelper::cleanupExpired, 10, 10, TimeUnit.SECONDS);
+        }).scheduleAtFixedRate(ClientConfigSync::cleanupExpired, 10, 10, TimeUnit.SECONDS);
     }
 
     public static void receiveChunk(ClientBoundConfigSyncPacket packet) {

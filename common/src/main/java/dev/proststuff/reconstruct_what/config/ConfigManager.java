@@ -2,7 +2,6 @@ package dev.proststuff.reconstruct_what.config;
 
 import dev.proststuff.reconstruct_what.ReconstructWhat;
 import dev.proststuff.reconstruct_what.config.instance.ConfigHolder;
-import dev.proststuff.reconstruct_what.platform.services.IPlatformHelper;
 import dev.proststuff.reconstruct_what.utility.IFancyLogging;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,8 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ConfigManager implements IFancyLogging {
-    private static final IPlatformHelper PLATFORM = ReconstructWhat.getPlatform();
-
     private static final ExecutorService CONFIG_EXECUTOR = Executors.newSingleThreadExecutor(r ->
             new Thread(r, "RECONSTRUCT WHAT!?")
     );
@@ -50,14 +47,6 @@ public class ConfigManager implements IFancyLogging {
         if (server) this.newConfig("server", ConfigHelper.ConfigType.SERVER);
     }
 
-    public static void loadAll(ConfigHelper.ConfigType type, @Nullable MinecraftServer server, boolean saveLater) {
-        configManagers.forEach(manager -> manager.loadSpecific(type, server, saveLater));
-    }
-
-    public static void saveAll(ConfigHelper.ConfigType type, @Nullable MinecraftServer server) {
-        configManagers.forEach(manager -> manager.saveSpecific(type, server));
-    }
-
     public void loadSpecific(ConfigHelper.ConfigType type, @Nullable MinecraftServer server, boolean saveLater) {
         this.info(LogType.ACTION, "Loading {} config for {}", type, this.NAME);
 
@@ -72,10 +61,10 @@ public class ConfigManager implements IFancyLogging {
 
             CompletableFuture.runAsync(() -> {
                 this.info(LogType.SUB, "Preparing {} at {}", name, configFile);
-
                 this.load(holder, configDir);
-                //holder.registerWatch(configDir, this);
+
             }, CONFIG_EXECUTOR).thenRun(() -> {
+                holder.deserialized(this);
                 this.info(LogType.DONE, "Finished loading '{}'", holder.getName());
 
                 if (saveLater) {
@@ -99,12 +88,11 @@ public class ConfigManager implements IFancyLogging {
 
             CompletableFuture.runAsync(() -> {
                 this.info(LogType.SUB, "Writing {} to {}", name, configFile);
-
-                ConfigHelper.createDirectory(configDir);
                 holder.save(configFile, this);
-
             }, CONFIG_EXECUTOR).thenRun(() -> {
+                holder.serialized(this);
                 holder.registerWatch(getConfigPath().resolve(name + ".json"), this);
+
                 this.info(LogType.DONE, "Saved '{}'", holder.getName());
             });
         });
@@ -112,12 +100,16 @@ public class ConfigManager implements IFancyLogging {
 
     private void load(ConfigHolder config, Path path) {
         this.info(LogType.DETAIL, "Loading '{}'", path);
+        config.deserializing(this);
+
         ConfigHelper.createDirectory(path);
         config.load(path.resolve(config.getName() + ".json"), this);
     }
 
     private void save(ConfigHolder config, Path path) {
         this.info(LogType.DETAIL, "Saving '{}'", path);
+        config.serializing(this);
+
         ConfigHelper.createDirectory(path);
         config.save(path.resolve(config.getName() + ".json"), this);
     }
@@ -148,41 +140,6 @@ public class ConfigManager implements IFancyLogging {
         return config;
     }
 
-    public Map<String, ConfigHolder> getConfigs() {
-        return this.configurations;
-    }
-
-    public ConfigHolder getStartup() {
-        return startup;
-    }
-
-    public ConfigHolder getCommon() {
-        return common;
-    }
-
-    public ConfigHolder getClient() {
-        return client;
-    }
-
-    public ConfigHolder getServer() {
-        return server;
-    }
-
-    @Override
-    public boolean canPrint() {
-        return this.DEBUG;
-    }
-
-    public Path getConfigPath() {
-        return ConfigHelper.getConfigDirectoryFor(this.NAME);
-    }
-
-    public Path getServerConfigPath(MinecraftServer server) {
-        return ConfigHelper.getServerConfigDirectoryFor(server, this.NAME);
-    }
-
-    // Sync
-
     public void syncToPlayer(ServerPlayer player) {
         info(LogType.ACTION, "Syncing server & common config to {}", player.getName().getString());
 
@@ -193,17 +150,22 @@ public class ConfigManager implements IFancyLogging {
         });
     }
 
-    // Others
-
-    public static ExecutorService getConfigExecutor() {
-        return CONFIG_EXECUTOR;
-    }
-
+    public Map<String, ConfigHolder> getConfigs() {return this.configurations;}
+    public ConfigHolder getStartup() {return startup;}
+    public ConfigHolder getCommon() {return common;}
+    public ConfigHolder getClient() {return client;}
+    public ConfigHolder getServer() {return server;}
+    public Path getConfigPath() {return ConfigHelper.getConfigDirectoryFor(this.NAME);}
+    public Path getServerConfigPath(MinecraftServer server) {return ConfigHelper.getServerConfigDirectoryFor(server, this.NAME);}
     @Override
-    public Logger getLogger() {
-        return this.LOGGER;
-    }
+    public Logger getLogger() {return this.LOGGER;}
+    @Override
+    public boolean canPrint() {return this.DEBUG;}
 
+    public static void loadAll(ConfigHelper.ConfigType type, @Nullable MinecraftServer server, boolean saveLater) {configManagers.forEach(manager -> manager.loadSpecific(type, server, saveLater));}
+    public static void saveAll(ConfigHelper.ConfigType type, @Nullable MinecraftServer server) {configManagers.forEach(manager -> manager.saveSpecific(type, server));}
+    public static ExecutorService getConfigExecutor() {return CONFIG_EXECUTOR;}
+    public static Set<ConfigManager> getManagers() {return configManagers;}
     public static ConfigManager getManager(String modId) {
         for (ConfigManager manager : configManagers) {
             if (manager.NAME.equals(modId)) {
@@ -211,9 +173,5 @@ public class ConfigManager implements IFancyLogging {
             }
         }
         return null;
-    }
-
-    public static Set<ConfigManager> getManagers() {
-        return configManagers;
     }
 }

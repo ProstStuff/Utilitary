@@ -17,9 +17,7 @@ public interface IPlatformHelper {
     String getPlatformName();
     boolean isModLoaded(String modId);
     boolean isDevelopmentEnvironment();
-    default String getEnvironmentName() {
-        return isDevelopmentEnvironment() ? "development" : "production";
-    }
+    default String getEnvironmentName() {return isDevelopmentEnvironment() ? "development" : "production";}
 
     <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T message, T... messages);
 
@@ -50,8 +48,7 @@ public interface IPlatformHelper {
             }
 
         } catch (IOException e) {
-            ReconstructWhat.LOG.error("Failed to compress config for '{}': {}", modId, e.getMessage());
-            e.printStackTrace();
+            ReconstructWhat.LOG.error("Failed to compress config for '{}': {}", modId, e);
         }
     }
 

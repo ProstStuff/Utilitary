@@ -11,21 +11,9 @@ public interface IFancyLogging {
     Logger getLogger();
     boolean canPrint();
 
-    default void info(LogType type, String format, Object... args) {
-        if (canPrint()) {
-            getLogger().info(type.format(format), args);
-        }
-    }
-
-    default void warn(LogType type, String format, Object... args) {
-        if (canPrint()) {
-            getLogger().warn(type.format(format), args);
-        }
-    }
-
-    default void error(LogType type, String format, Object... args) {
-        getLogger().error(type.format(format), args);
-    }
+    default void info(LogType type, String format, Object... args) {if (canPrint()) getLogger().info(type.format(format), args);}
+    default void warn(LogType type, String format, Object... args) {if (canPrint()) getLogger().warn(type.format(format), args);}
+    default void error(LogType type, String format, Object... args) {getLogger().error(type.format(format), args);}
 
     enum LogType {
         ACTION("→"),

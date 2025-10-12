@@ -12,7 +12,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
@@ -23,26 +22,14 @@ import net.neoforged.neoforge.network.handling.MainThreadPayloadHandler;
 @Mod(ReconstructWhat.ID)
 @EventBusSubscriber(modid = ReconstructWhat.ID)
 public class ReconstructWhatNeoForge {
-    static {
-        ReconstructWhat.init();
-    }
-
-    public ReconstructWhatNeoForge(IEventBus eventBus) {}
+    public ReconstructWhatNeoForge(IEventBus eventBus) {ReconstructWhat.init();}
 
     @SubscribeEvent
-    public static void fmlSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.COMMON, null));
-    }
-
+    public static void fmlSetup(FMLCommonSetupEvent event) {event.enqueueWork(() -> ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.COMMON, null));}
     @SubscribeEvent
-    public static void fmlServerStop(ServerStoppingEvent event) {
-        ConfigHolder.stopWatching(ConfigHelper.ConfigType.SERVER);
-    }
-
+    public static void fmlServerStop(ServerStoppingEvent event) {ConfigHolder.stopWatching(ConfigHelper.ConfigType.SERVER);}
     @SubscribeEvent
-    public static void fmlServer(ServerAboutToStartEvent event) {
-        ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.SERVER, event.getServer());
-    }
+    public static void fmlServer(ServerAboutToStartEvent event) {ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.SERVER, event.getServer());}
 
     @SubscribeEvent
     public static void playerJoined(PlayerEvent.PlayerLoggedInEvent event) {
@@ -50,11 +37,6 @@ public class ReconstructWhatNeoForge {
             if (serverPlayer.connection.hasChannel(ClientBoundConfigSyncPacket.TYPE))
                 RWEvents.playerJoined(serverPlayer);
         }
-    }
-
-    @SubscribeEvent
-    public static void startup(ModConfigEvent event) {
-
     }
 
     @SubscribeEvent

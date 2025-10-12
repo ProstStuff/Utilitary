@@ -20,7 +20,5 @@ public class RWNeoForgeClient {
     }
 
     @SubscribeEvent
-    public static void fmlClient(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.CLIENT, null));
-    }
+    public static void fmlClient(FMLClientSetupEvent event) {event.enqueueWork(() -> ReconstructWhat.loadConfigs(ConfigHelper.ConfigType.CLIENT, null));}
 }

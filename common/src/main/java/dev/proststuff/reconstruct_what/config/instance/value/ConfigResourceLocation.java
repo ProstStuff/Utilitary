@@ -5,25 +5,17 @@ import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
 import net.minecraft.resources.ResourceLocation;
 
 public class ConfigResourceLocation extends ConfigValue<ResourceLocation> {
-    public ConfigResourceLocation(String name, ResourceLocation defaultValue, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodecs.RESOURCE_LOCATION, runtimeOnly);
+    public ConfigResourceLocation(String name, ResourceLocation resourceLocation, boolean runtimeOnly) {
+        super(name, resourceLocation, ConfigCodecs.RESOURCE_LOCATION, runtimeOnly);
     }
 
-    public ConfigResourceLocation(String name, ResourceLocation defaultValue) {
-        this(name, defaultValue, false);
+    public ConfigResourceLocation(String name, ResourceLocation resourceLocation) {
+        this(name, resourceLocation, false);
     }
 
     @Override
     public ResourceLocation set(ResourceLocation value) {
         return super.set(value != null ? value : getDefault());
-    }
-
-    public String getNamespace() {
-        return get().getNamespace();
-    }
-
-    public String getPath() {
-        return get().getPath();
     }
 
     @Override
@@ -34,4 +26,7 @@ public class ConfigResourceLocation extends ConfigValue<ResourceLocation> {
 
         return super.is(obj);
     }
+
+    public String getNamespace() {return get().getNamespace();}
+    public String getPath() {return get().getPath();}
 }

@@ -14,14 +14,14 @@ public class ConfigMap<K, V> extends ConfigValue<Map<K, V>> {
     private final ConfigCodec<K> keyCodec;
     private final ConfigCodec<V> valueCodec;
 
-    public ConfigMap(String name, Map<K, V> defaultValue, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodec.map(defaultValue), runtimeOnly);
+    public ConfigMap(String name, Map<K, V> map, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec, boolean runtimeOnly) {
+        super(name, map, ConfigCodec.map(map), runtimeOnly);
         this.keyCodec = keyCodec;
         this.valueCodec = valueCodec;
     }
 
-    public ConfigMap(String name, Map<K, V> defaultValue, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec) {
-        this(name, defaultValue, keyCodec, valueCodec, false);
+    public ConfigMap(String name, Map<K, V> map, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec) {
+        this(name, map, keyCodec, valueCodec, false);
     }
 
     public ConfigMap(String name, ConfigCodec<K> keyCodec, ConfigCodec<V> valueCodec, boolean runtimeOnly) {
@@ -55,16 +55,13 @@ public class ConfigMap<K, V> extends ConfigValue<Map<K, V>> {
         }
 
         this.value = map;
-        setLoaded();
     }
 
-    public void put(K key, V value) {
-        this.value.put(key, value);
-        changed();
+    public V put(K key, V value) {
+        return this.value.put(key, value);
     }
 
-    public void remove(K key) {
-        this.value.remove(key);
-        changed();
+    public V remove(K key) {
+        return this.value.remove(key);
     }
 }

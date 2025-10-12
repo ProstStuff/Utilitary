@@ -12,13 +12,13 @@ import java.util.List;
 public class ConfigList<E> extends ConfigValue<List<E>> {
     protected final ConfigCodec<E> elementCodec;
 
-    public ConfigList(String name, List<E> defaultValue, ConfigCodec<E> codec, boolean runtimeOnly) {
-        super(name, new ArrayList<>(defaultValue), ConfigCodec.list(defaultValue), runtimeOnly);
+    public ConfigList(String name, List<E> list, ConfigCodec<E> codec, boolean runtimeOnly) {
+        super(name, new ArrayList<>(list), ConfigCodec.list(list), runtimeOnly);
         this.elementCodec = codec;
     }
 
-    public ConfigList(String name, List<E> defaultValue, ConfigCodec<E> codec) {
-        this(name, new ArrayList<>(defaultValue), codec, false);
+    public ConfigList(String name, List<E> list, ConfigCodec<E> codec) {
+        this(name, new ArrayList<>(list), codec, false);
     }
 
     public ConfigList(String name, ConfigCodec<E> codec, boolean runtimeOnly) {
@@ -59,7 +59,6 @@ public class ConfigList<E> extends ConfigValue<List<E>> {
         }
 
         this.value = list;
-        this.setLoaded();
     }
 
     public void add(E element) {

@@ -52,7 +52,7 @@ static {
 
   // Register onLoad listener
   STARTUP.onLoaded(manager -> {
-    ...
+      // Do something when loaded
   });
     
   // you can ignore `null`, it just asks for a MinecraftServer
@@ -65,3 +65,12 @@ static {
 - This config library is mainly made for my mods,
 this means updates of this library follows the development of my other mod.
 - Experimental mod; use at your own risk
+- Library compatibility between client-server platform:
+
+| Platform                   | Server without RW / Vanilla | Server with RW |
+|----------------------------|-----------------------------|----------------|
+| Fabric Client (with RW)    | supported                   | supported      |
+| Fabric Client (without RW) | -                           | supported*     |
+| NeoForge (with RW)         | unsupported                 | supported      |
+| NeoForge (without RW)      | -                           | unsupported*   |
+*not tested

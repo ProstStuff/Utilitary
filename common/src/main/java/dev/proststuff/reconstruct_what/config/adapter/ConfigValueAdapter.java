@@ -26,9 +26,6 @@ public class ConfigValueAdapter<T> extends TypeAdapter<ConfigValue<T>> {
         GSON.toJson(value.get(), value.get().getClass(), out);
     }
 
-    /**
-     * @deprecated Unused read methods. Do not touch or use.
-     */
     @Deprecated
     @Override
     public ConfigValue<T> read(JsonReader in) throws IOException {

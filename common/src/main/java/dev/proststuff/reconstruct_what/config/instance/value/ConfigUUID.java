@@ -6,11 +6,11 @@ import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
 import java.util.UUID;
 
 public class ConfigUUID extends ConfigValue<UUID> {
-    public ConfigUUID(String name, UUID defaultValue, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodecs.UUID, runtimeOnly);
+    public ConfigUUID(String name, UUID uuid, boolean runtimeOnly) {
+        super(name, uuid, ConfigCodecs.UUID, runtimeOnly);
     }
 
-    public ConfigUUID(String name, UUID defaultValue) {
-        this(name, defaultValue, false);
+    public ConfigUUID(String name, UUID uuid) {
+        this(name, uuid, false);
     }
 }

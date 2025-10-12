@@ -9,23 +9,12 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
-    public String getPlatformName() {
-        return "NeoForge";
-    }
-
+    public String getPlatformName() {return "NeoForge";}
     @Override
-    public boolean isModLoaded(String modId) {
-        return ModList.get().isLoaded(modId);
-    }
-
+    public boolean isModLoaded(String modId) {return ModList.get().isLoaded(modId);}
     @Override
-    public boolean isDevelopmentEnvironment() {
-        return !FMLLoader.isProduction();
-    }
-
+    public boolean isDevelopmentEnvironment() {return !FMLLoader.isProduction();}
     @SafeVarargs
     @Override
-    public final <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T message, T... messages) {
-        PacketDistributor.sendToPlayer(player, message, messages);
-    }
+    public final <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T message, T... messages) {PacketDistributor.sendToPlayer(player, message, messages);}
 }

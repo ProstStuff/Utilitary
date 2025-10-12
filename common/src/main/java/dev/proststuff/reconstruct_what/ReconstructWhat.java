@@ -31,7 +31,6 @@ public class ReconstructWhat {
         return ResourceLocation.fromNamespaceAndPath(ID, path);
     }
 
-    //TODO: Make it load a bit late to allow other mods to register their config and Reconstruct What initialize them all automatically.
     public static void loadConfigs(ConfigHelper.ConfigType configType, @Nullable MinecraftServer server) {
         ConfigManager.loadAll(configType, server, true);
     }

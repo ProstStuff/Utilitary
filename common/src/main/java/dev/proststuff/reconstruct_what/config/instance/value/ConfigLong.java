@@ -7,22 +7,22 @@ public class ConfigLong extends ConfigValue<Long> {
     private final long min;
     private final long max;
 
-    public ConfigLong(String name, long defaultValue, long min, long max, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodecs.LONG, runtimeOnly);
+    public ConfigLong(String name, long l, long min, long max, boolean runtimeOnly) {
+        super(name, l, ConfigCodecs.LONG, runtimeOnly);
         this.min = min;
         this.max = max;
     }
 
-    public ConfigLong(String name, long defaultValue, long min, long max) {
-        this(name, defaultValue, min, max, false);
+    public ConfigLong(String name, long l, long min, long max) {
+        this(name, l, min, max, false);
     }
 
-    public ConfigLong(String name, long defaultValue) {
-        this(name, defaultValue, Long.MIN_VALUE, Long.MAX_VALUE, false);
+    public ConfigLong(String name, long l) {
+        this(name, l, Long.MIN_VALUE, Long.MAX_VALUE, false);
     }
 
-    public ConfigLong(String name, long defaultValue, boolean runtimeOnly) {
-        this(name, defaultValue, Long.MIN_VALUE, Long.MAX_VALUE, runtimeOnly);
+    public ConfigLong(String name, long l, boolean runtimeOnly) {
+        this(name, l, Long.MIN_VALUE, Long.MAX_VALUE, runtimeOnly);
     }
 
     @Override

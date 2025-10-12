@@ -31,10 +31,6 @@ public abstract class AbstractConfigScreen extends Screen implements IHoldConfig
         manager.loadSpecific(ConfigHelper.ConfigType.COMMON, null, true);
     }
 
-    public ConfigManager getConfig() {
-        return this.manager;
-    }
-
     public AbstractConfigScreen setCustomPanorama(ResourceLocation cubeMap) {
         this.customPanorama = new PanoramaRenderer(new CubeMap(cubeMap));
         this.renderPanorama = true;
@@ -52,9 +48,8 @@ public abstract class AbstractConfigScreen extends Screen implements IHoldConfig
         return this;
     }
 
-    public boolean shouldRenderPanorama() {
-        return this.renderPanorama;
-    }
+    public boolean shouldRenderPanorama() {return this.renderPanorama;}
+    public ConfigManager getConfig() {return this.manager;}
 
     @Override
     public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -72,7 +67,6 @@ public abstract class AbstractConfigScreen extends Screen implements IHoldConfig
     }
 
     protected void renderBeforeMenuBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {}
-
     protected void renderAfterMenuBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {}
 
     @Override

@@ -7,22 +7,22 @@ public class ConfigDouble extends ConfigValue<Double> {
     private final double min;
     private final double max;
 
-    public ConfigDouble(String name, double defaultValue, double min, double max, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodecs.DOUBLE, runtimeOnly);
+    public ConfigDouble(String name, double d, double min, double max, boolean runtimeOnly) {
+        super(name, d, ConfigCodecs.DOUBLE, runtimeOnly);
         this.min = min;
         this.max = max;
     }
 
-    public ConfigDouble(String name, double defaultValue, double min, double max) {
-        this(name, defaultValue, min, max, false);
+    public ConfigDouble(String name, double d, double min, double max) {
+        this(name, d, min, max, false);
     }
 
-    public ConfigDouble(String name, double defaultValue) {
-        this(name, defaultValue, Double.NEGATIVE_INFINITY, java.lang.Double.POSITIVE_INFINITY, false);
+    public ConfigDouble(String name, double d) {
+        this(name, d, Double.NEGATIVE_INFINITY, java.lang.Double.POSITIVE_INFINITY, false);
     }
 
-    public ConfigDouble(String name, double defaultValue, boolean runtimeOnly) {
-        this(name, defaultValue, Double.NEGATIVE_INFINITY, java.lang.Double.POSITIVE_INFINITY, runtimeOnly);
+    public ConfigDouble(String name, double d, boolean runtimeOnly) {
+        this(name, d, Double.NEGATIVE_INFINITY, java.lang.Double.POSITIVE_INFINITY, runtimeOnly);
     }
 
     @Override

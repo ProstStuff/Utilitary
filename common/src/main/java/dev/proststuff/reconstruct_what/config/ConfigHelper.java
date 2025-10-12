@@ -57,4 +57,11 @@ public class ConfigHelper {
             return this.name().toLowerCase();
         }
     }
+
+    public enum SerializationType {
+        SERIALIZING,
+        SERIALIZED,
+        DESERIALIZING,
+        DESERIALIZED
+    }
 }

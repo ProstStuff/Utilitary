@@ -7,9 +7,13 @@ import dev.proststuff.reconstruct_what.config.instance.ConfigValue;
 public class ConfigEnum<E extends Enum<E>> extends ConfigValue<E> {
     private final Class<E> enumClass;
 
-    public ConfigEnum(String name, Class<E> enumClass, E defaultValue, boolean runtimeOnly) {
-        super(name, defaultValue, ConfigCodec.enums(enumClass), runtimeOnly);
+    public ConfigEnum(String name, Class<E> enumClass, E e, boolean runtimeOnly) {
+        super(name, e, ConfigCodec.enums(enumClass), runtimeOnly);
         this.enumClass = enumClass;
+    }
+
+    public ConfigEnum(String name, Class<E> enumClass, E e) {
+        this(name, enumClass, e, false);
     }
 
     public void next() {
