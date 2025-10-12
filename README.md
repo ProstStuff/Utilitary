@@ -52,9 +52,7 @@ static {
 
   // Register onLoad listener
   STARTUP.onLoaded(manager -> {
-    for (String string : RECONSTRUCT_WHAT.get()) {
-      manager.info(IFancyLogging.LogType.ACTION, string);
-    }
+    ...
   });
     
   // you can ignore `null`, it just asks for a MinecraftServer
