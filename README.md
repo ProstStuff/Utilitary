@@ -3,7 +3,7 @@ THERE'S NOTHING LEFT!
 
 ---
 
-RECONSTRUCT WHAT is an over-engineered Minecraft Json-based config library, while remain optimized... I think...
+RECONSTRUCT WHAT is an over-engineered Minecraft Json config library, while remain optimized... I think...
 
 ## Why make this mod?
 I can't find a good config library, so I made my own.   
@@ -58,7 +58,7 @@ static {
   // you can ignore `null`, it just asks for a MinecraftServer
   // (for server config only as serverconfig are relative to world)
   // true indicates whether the config will save later after load or not
-  // ^ saves new value (and delete unregistered value | unintended)
+  // ^ saves new value (and delete unregistered value)
   MANAGER.loadSpecific(ConfigHelper.ConfigType.STARTUP, null, true);
 }
 ```
