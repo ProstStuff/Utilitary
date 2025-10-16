@@ -4,27 +4,32 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.proststuff.reconstruct_what.ReconstructWhat;
+import dev.proststuff.reconstruct_what.config.ClientBoundConfigSyncPacket;
 import dev.proststuff.reconstruct_what.config.ConfigHelper;
 import dev.proststuff.reconstruct_what.config.ConfigManager;
 import dev.proststuff.reconstruct_what.config.ICanConfigure;
-import dev.proststuff.reconstruct_what.platform.services.IPlatformHelper;
+import dev.proststuff.reconstruct_what.platform.AbstractPlatform;
 import dev.proststuff.reconstruct_what.utility.IFancyLogging;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.zip.GZIPOutputStream;
 
 @SuppressWarnings("unchecked")
 public class ConfigHolder implements ICanConfigure<ConfigGroup> {
-    private static final IPlatformHelper PLATFORM = ReconstructWhat.getPlatform();
+    private static final AbstractPlatform PLATFORM = ReconstructWhat.getPlatform();
     private static final Object config_lock = new Object();
     private static final Map<Path, ConfigHolder> watchedConfigs = new HashMap<>();
     private static WatchService watchService;
@@ -176,7 +181,7 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
         JsonElement data = serialize(manager);
         manager.info(IFancyLogging.LogType.ACTION, "Syncing '{}' config to client...", data);
 
-        PLATFORM.syncConfigToPlayer(player, manager.NAME, this.name, data);
+        syncConfigToPlayer(PLATFORM, player, manager.NAME, this.name, data);
         manager.info(IFancyLogging.LogType.SUB, "Sent {} bytes of data to {} config", data.toString().getBytes(StandardCharsets.UTF_8).length, this.getName());
     }
 
@@ -266,5 +271,44 @@ public class ConfigHolder implements ICanConfigure<ConfigGroup> {
         } catch (Exception e) {
             ReconstructWhat.LOG.error("Error while trying to stop watch changes: ", e);
         }
+    }
+
+    public static void syncConfigToPlayer(AbstractPlatform platform, ServerPlayer player, String modId, String configName, JsonElement jsonData) {
+        try {
+            byte[] compressed = compress(jsonData.toString().getBytes(StandardCharsets.UTF_8));
+
+            final int MAX_CHUNK_SIZE = 512 * 1024;
+            int totalChunks = (int) Math.ceil((double) compressed.length / MAX_CHUNK_SIZE);
+
+            ReconstructWhat.LOG.info("Syncing {} config ({} bytes compressed, created {} chunks) to {}",
+                    modId, compressed.length, totalChunks, player.getName().getString());
+
+            for (int i = 0; i < totalChunks; i++) {
+                int start = i * MAX_CHUNK_SIZE;
+                int end = Math.min(compressed.length, start + MAX_CHUNK_SIZE);
+                byte[] chunk = Arrays.copyOfRange(compressed, start, end);
+
+                ClientBoundConfigSyncPacket packet = new ClientBoundConfigSyncPacket(
+                        modId,
+                        configName,
+                        i,
+                        totalChunks,
+                        Base64.getEncoder().encodeToString(chunk),
+                        true
+                );
+                platform.sendToPlayer(player, packet);
+            }
+
+        } catch (IOException e) {
+            ReconstructWhat.LOG.error("Failed to compress config for '{}': {}", modId, e);
+        }
+    }
+
+    private static byte[] compress(byte[] data) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (GZIPOutputStream gzip = new GZIPOutputStream(bos)) {
+            gzip.write(data);
+        }
+        return bos.toByteArray();
     }
 }

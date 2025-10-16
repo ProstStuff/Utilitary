@@ -3,13 +3,14 @@ THERE'S NOTHING LEFT!
 
 ---
 
-RECONSTRUCT WHAT is an over-engineered Minecraft Json config library, while remain optimized... I think...
+RECONSTRUCT WHAT is an over-engineered Minecraft Json config library, and multi-loader abstraction.
 
 ## Why make this mod?
 I can't find a good config library, so I made my own.   
 -Almost every modders ever...
 
-### Features
+## Features
+### Configuration
 - Extensible `ConfigValue`
   - Can be extended for more compatibility between other objects
   - Use custom codec, allowing full control over serialization and deserialization
@@ -40,6 +41,8 @@ I can't find a good config library, so I made my own.
     - Compress and split large data into chunks
   - Detects external changes during runtime
 - Configuration screens (WIP)
+### Multi-loader abstraction (since 2.0.0)
+- Easy cross-platform registration
 
 ### Notes:
 - Startup config must be loaded manually

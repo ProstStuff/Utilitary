@@ -4,7 +4,7 @@ import dev.proststuff.reconstruct_what.config.ConfigHelper;
 import dev.proststuff.reconstruct_what.config.ConfigManager;
 import dev.proststuff.reconstruct_what.config.instance.ConfigHolder;
 import dev.proststuff.reconstruct_what.platform.Services;
-import dev.proststuff.reconstruct_what.platform.services.IPlatformHelper;
+import dev.proststuff.reconstruct_what.platform.AbstractPlatform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +15,7 @@ public class ReconstructWhat {
     public static final String ID = "reconstruct_what";
     public static final String NAME = "RECONSTRUCT WHAT";
     public static final Logger LOG = LoggerFactory.getLogger(NAME);
+    private static final AbstractPlatform PLATFORM = Services.load(AbstractPlatform.class);
 
     public static void init() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -39,7 +40,7 @@ public class ReconstructWhat {
         ConfigManager.saveAll(configType, server);
     }
 
-    public static IPlatformHelper getPlatform() {
-        return Services.PLATFORM;
+    public static AbstractPlatform getPlatform() {
+        return PLATFORM;
     }
 }
