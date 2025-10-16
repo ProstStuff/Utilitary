@@ -1,12 +1,10 @@
 package dev.proststuff.reconstruct_what.platform;
 
 import dev.proststuff.reconstruct_what.ReconstructWhat;
-import dev.proststuff.reconstruct_what.platform.services.IPlatformHelper;
 
 import java.util.ServiceLoader;
 
 public class Services {
-    public static final IPlatformHelper PLATFORM = load(IPlatformHelper.class);
     public static <T> T load(Class<T> clazz) {
         final T loadedService = ServiceLoader.load(clazz)
                 .findFirst()

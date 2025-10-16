@@ -1,9 +1,9 @@
-package dev.proststuff.reconstruct_what.platform.services;
+package dev.proststuff.reconstruct_what.platform;
 
 import com.google.gson.JsonElement;
 import dev.proststuff.reconstruct_what.ReconstructWhat;
 import dev.proststuff.reconstruct_what.config.ClientBoundConfigSyncPacket;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import dev.proststuff.reconstruct_what.platform.services.AbstractPlatform;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.io.ByteArrayOutputStream;
@@ -13,22 +13,20 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.zip.GZIPOutputStream;
 
-public interface IPlatformHelper {
-    String getPlatformName();
-    boolean isModLoaded(String modId);
-    boolean isDevelopmentEnvironment();
-    default String getEnvironmentName() {return isDevelopmentEnvironment() ? "development" : "production";}
+public abstract class RWAbstractPlatform extends AbstractPlatform {
+    @Override
+    public String getModId() {
+        return ReconstructWhat.ID;
+    }
 
-    <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T message, T... messages);
-
-    default void syncConfigToPlayer(ServerPlayer player, String modId, String configName, JsonElement jsonData) {
+    public void syncConfigToPlayer(ServerPlayer player, String modId, String configName, JsonElement jsonData) {
         try {
             byte[] compressed = compress(jsonData.toString().getBytes(StandardCharsets.UTF_8));
 
             final int MAX_CHUNK_SIZE = 512 * 1024;
             int totalChunks = (int) Math.ceil((double) compressed.length / MAX_CHUNK_SIZE);
 
-            ReconstructWhat.LOG.info("Syncing {} config ({} bytes compressed, created {} chunks) to {}",
+            info(LogType.ACTION, "Syncing {} config ({} bytes compressed, created {} chunks) to {}",
                     modId, compressed.length, totalChunks, player.getName().getString());
 
             for (int i = 0; i < totalChunks; i++) {
@@ -48,7 +46,7 @@ public interface IPlatformHelper {
             }
 
         } catch (IOException e) {
-            ReconstructWhat.LOG.error("Failed to compress config for '{}': {}", modId, e);
+            error(LogType.ERROR, "Failed to compress config for '{}': {}", modId, e);
         }
     }
 
