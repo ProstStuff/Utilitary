@@ -3,7 +3,8 @@ package dev.proststuff.reconstruct_what.platform.registry;
 import dev.proststuff.reconstruct_what.platform.AbstractPlatform;
 import net.minecraft.core.Registry;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -13,7 +14,7 @@ public class RegistryPlatform<T> {
     protected final Registry<? super T> REGISTRY;
     protected final BiFunction<String, Supplier<? extends T>, Supplier<? extends T>> registrationFunction;
 
-    protected List<RegistryEntry<? extends T>> ENTRIES = List.of();
+    protected Set<RegistryEntry<? extends T>> ENTRIES = new HashSet<>();
 
     public RegistryPlatform(AbstractPlatform platform, Registry<? super T> registry) {
         this.PLATFORM = platform;
@@ -42,7 +43,7 @@ public class RegistryPlatform<T> {
     }
 
     public Registry<? super T> getRegistry() {return REGISTRY;}
-    public List<RegistryEntry<? extends T>> getEntries() {return ENTRIES;}
+    public Set<RegistryEntry<? extends T>> getEntries() {return ENTRIES;}
 
     public static <T> String parseAsString(RegistryPlatform<T> platform) {return platform.PLATFORM.getModId() + "-" + platform.REGISTRY.key().location();}
 }
