@@ -6,5 +6,5 @@ plugins {
 tasks.register("buildProper") {
     group = "build"
     description = "Build jars, Fabric use remap instead of normal build"
-    dependsOn(":common:build", ":fabric:remapJar", ":neoforge:build")
+    dependsOn(":common:build", ":fabric:build", ":fabric:remapJar", ":neoforge:build")
 }

@@ -49,7 +49,7 @@ public class RegistryEntry<T> {
     }
 
     public boolean isLocked() {
-        if (exclusives != null && !exclusives.isEmpty()) {
+        if (!exclusives.isEmpty()) {
             for (String modId : exclusives) {
                 if (platform.isModLoaded(modId)) return false;
             }
