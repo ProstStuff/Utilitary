@@ -19,7 +19,7 @@ public class BlockRegistryPlatform extends RegistryPlatform<Block> {
         RegistryPlatform<Item> p = PLATFORM.getRegistryOrThrow(BuiltInRegistries.ITEM);
 
         RegistryEntry<B> b = register(name, supplier);
-        p.register(name, () -> new BlockItem(b.get(), properties));
+        p.register(name, () -> new BlockItem(b.getFromRegistry(), properties));
         return b;
     }
 

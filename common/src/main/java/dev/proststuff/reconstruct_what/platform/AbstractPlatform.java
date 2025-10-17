@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
@@ -41,8 +42,11 @@ public abstract class AbstractPlatform implements IFancyLogging {
     public <T> RegistryPlatform<T> addRegistryPlatform(RegistryPlatform<T> registryPlatform) {
         if (getRegistry(registryPlatform.getRegistry()) != null) throw new RuntimeException("RegistryPlatform for " + registryPlatform.getRegistry().key().location() + " already exist.");
         REGISTRIES.put(registryPlatform.getRegistry(), registryPlatform);
+
+        registryPlatform.init();
         return registryPlatform;
     }
+    public <T> RegistryPlatform<T> addRegistryPlatform(Function<AbstractPlatform, RegistryPlatform<T>> func) {return addRegistryPlatform(func.apply(this));}
 
     public abstract <T> BiFunction<String, Supplier<? extends T>, Supplier<? extends T>> createRegistrationFunction(Registry<? super T> registry);
     public <T> RegistryEntry<T> register(String name, Registry<T> registry, Supplier<T> supplier) {return getRegistryOrThrow(registry).register(name, supplier);}

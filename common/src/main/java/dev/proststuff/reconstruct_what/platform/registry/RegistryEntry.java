@@ -6,8 +6,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class RegistryEntry<T> {
@@ -18,7 +18,7 @@ public class RegistryEntry<T> {
 
     private final ResourceLocation identifier;
     private final ResourceKey<T> resourceKey;
-    private List<String> exclusives;
+    private final ArrayList<String> exclusives = new ArrayList<>();
 
     private boolean locked = false;
 
@@ -33,14 +33,12 @@ public class RegistryEntry<T> {
     }
 
     public RegistryEntry<T> exclusiveTo(String modId) {
-        if (exclusives == null) {this.exclusives = List.of();}
         exclusives.clear();
         exclusives.add(modId);
         return this;
     }
 
     public RegistryEntry<T> exclusiveTo(String... modIds) {
-        if (exclusives == null) {this.exclusives = List.of();}
         exclusives.clear();
         exclusives.addAll(Arrays.asList(modIds));
         return this;
@@ -62,6 +60,8 @@ public class RegistryEntry<T> {
     }
 
     public T get() {return supplier.get();}
+    public Supplier<T> lazy() {return () -> get();} // To fix NeoForge registration
+    public T getFromRegistry() {return registry.get(identifier);} // Again, fix NeoForge registration.
     public String getName() {return name;}
     public ResourceLocation getIdentifier() {return identifier;}
     public Registry<T> getRegistry() {return registry;}

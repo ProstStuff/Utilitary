@@ -2,3 +2,9 @@ plugins {
     id 'fabric-loom' version '1.10-SNAPSHOT' apply false
     id 'net.neoforged.moddev' version '2.0.107' apply false
 }
+
+tasks.register("buildProper") {
+    group = "build"
+    description = "Build jars, Fabric use remap instead of normal build"
+    dependsOn(":common:build", ":fabric:remapJar", ":neoforge:build")
+}

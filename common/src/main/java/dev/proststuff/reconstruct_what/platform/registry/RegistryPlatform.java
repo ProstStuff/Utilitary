@@ -46,4 +46,7 @@ public class RegistryPlatform<T> {
     public Set<RegistryEntry<? extends T>> getEntries() {return ENTRIES;}
 
     public static <T> String parseAsString(RegistryPlatform<T> platform) {return platform.PLATFORM.getModId() + "-" + platform.REGISTRY.key().location();}
+
+    // All objects must be registered here
+    public void init() {}
 }
