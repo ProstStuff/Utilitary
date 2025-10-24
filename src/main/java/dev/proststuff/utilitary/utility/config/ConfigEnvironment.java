@@ -1,7 +1,7 @@
 package dev.proststuff.utilitary.utility.config;
 
 /**
- * Config envirotment types
+ * Config environment types
  */
 public enum ConfigEnvironment {
     COMMON,

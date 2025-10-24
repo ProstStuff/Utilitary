@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Base recipe json builder from NeoForge's SimpleRecipeBuilder documentation
+ */
 public abstract class BaseRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
     protected final ItemStack result;
     protected final Map<String, AdvancementCriterion<?>> criteria = new LinkedHashMap<>();

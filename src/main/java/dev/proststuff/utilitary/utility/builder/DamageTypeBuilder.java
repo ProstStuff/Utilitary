@@ -9,7 +9,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 /**
- * Simple DamageType builder class
+ * Simple DamageType builder class for data generation
  */
 public class DamageTypeBuilder {
     private final RegistryKey<DamageType> registryKey;

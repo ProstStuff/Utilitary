@@ -1,5 +1,7 @@
 package dev.proststuff.utilitary.content.item;
 
+import dev.proststuff.utilitary.utility.RegistryUtil;
+import dev.proststuff.utilitary.utility.StringUtil;
 import dev.proststuff.utilitary.utility.data.IModelGeneratable;
 import dev.proststuff.utilitary.utility.data.ILanguageGeneratable;
 import net.minecraft.item.Item;
@@ -13,7 +15,7 @@ public class BaseItem extends Item implements IModelGeneratable, ILanguageGenera
 
     @Override
     public String getTranslation(String lang) {
-        Identifier identifier = Registries.ITEM.getId(this);
-        return ILanguageGeneratable.format(identifier.getPath());
+        Identifier identifier = RegistryUtil.getIdentifierOrThrow(Registries.ITEM, this);
+        return StringUtil.format(identifier.getPath());
     }
 }

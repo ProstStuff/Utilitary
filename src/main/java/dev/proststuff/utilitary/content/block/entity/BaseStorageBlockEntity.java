@@ -20,7 +20,7 @@ public abstract class BaseStorageBlockEntity extends BaseSyncedBlockEntity imple
     public void dropAll() {
         if (world != null && world instanceof ServerWorld serverWorld) {
             for (ItemStack stack : getItems()) {
-                world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack.copy()));
+                serverWorld.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack.copy()));
             }
         }
 

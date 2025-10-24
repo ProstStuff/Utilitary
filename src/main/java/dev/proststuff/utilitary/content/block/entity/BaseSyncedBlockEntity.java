@@ -11,6 +11,10 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Synced block entity class that you'll usually find for block entities with storage data.</br>
+ * (e.g. Farmer's Delight SyncedBlockEntity)
+ */
 public abstract class BaseSyncedBlockEntity extends BlockEntity {
     public BaseSyncedBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);

@@ -1,6 +1,8 @@
 package dev.proststuff.utilitary.content.block;
 
 import dev.proststuff.utilitary.content.block.entity.BaseStorageBlockEntity;
+import dev.proststuff.utilitary.utility.RegistryUtil;
+import dev.proststuff.utilitary.utility.StringUtil;
 import dev.proststuff.utilitary.utility.data.IBlockLootTableGeneratable;
 import dev.proststuff.utilitary.utility.data.IModelGeneratable;
 import dev.proststuff.utilitary.utility.data.ILanguageGeneratable;
@@ -29,7 +31,7 @@ public abstract class BaseBlockWithEntity extends BlockWithEntity implements ILa
 
     @Override
     public String getTranslation(String lang) {
-        Identifier identifier = Registries.BLOCK.getId(this);
-        return ILanguageGeneratable.format(identifier.getPath());
+        Identifier identifier = RegistryUtil.getIdentifierOrThrow(Registries.BLOCK, this);
+        return StringUtil.format(identifier.getPath());
     }
 }
