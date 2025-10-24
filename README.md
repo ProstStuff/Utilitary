@@ -1,79 +1,45 @@
-# RECONSTRUCT WHAT?
-THERE'S NOTHING LEFT!
+# Utilitary
+When there's not enough utilities to ease modding development.
+
+## About
+
+---
+Formerly called **RECONSTRUCT WHAT!?**,
+**Utilitary** is a Fabric utility library that comes with pre-built Json config & common classes that can be found from other mods to ease Minecraft modding.
+
+### Features
 
 ---
 
-RECONSTRUCT WHAT is an over-engineered Minecraft Json config library, and multi-loader abstraction.
-
-## Why make this mod?
-I can't find a good config library, so I made my own.   
--Almost every modders ever...
-
-## Features
-### Configuration
-- Extensible `ConfigValue`
-  - Can be extended for more compatibility between other objects
-  - Use custom codec, allowing full control over serialization and deserialization
-  - Premade `ConfigValue`:
-    - Basic types (booleans, integers, doubles, longs, strings)
-    - Color
-    - Enum
-    - Keybind
-    - List
-    - Map
-    - ResourceLocation
-    - Time
-    - UUID
-    - Vec2 & Vec3
-- Multi-configuration files
-  - Why limited to only one common, client, server, and startup file? Why not more?
-   - Every `ConfigManager` get their own folder according to their names
-    - (`config/arthritis/`, `config/TheCoolerArcheries/`)
-  - `ConfigHolder` also get their own file and stored to their `ConfigManager` folder
-    - (`config/arthrits/hardmodes.json`, `WORLD/serverconfig/TheCoolerArcheries/Bows&Gun.json`).
-- Nesting group
-  - Use `ConfigGroup` to group values together to make them neatly packed
-    - Can also nest another `ConfigGroup`
-    - ^ Please do not create singularity from this, no preventive measure has been made as of current version
-- Automated syncing & initialization
-  - Common, client, and server configs are initialized automatically by the library
-  - Common and server configs are synced to the client
-    - Compress and split large data into chunks
-  - Detects external changes during runtime
-- Configuration screens (WIP)
-### Multi-loader abstraction (since 2.0.0)
-- Easy cross-platform registration
-
-### Notes:
-- Startup config must be loaded manually
-```java
-static {
-  // Make sure you have a config with `ConfigHelper.ConfigType.STARTUP` type created
-  // from `.newConfig("startup", ConfigHelper.ConfigType.STARTUP)`
-  // or `new ConfigManager(MOD_NAME, true, ...)`
-  ConfigHolder STARTUP = MANAGER.getStartup().add(RECONSTRUCT_WHAT);
-
-  // Register onLoad listener
-  STARTUP.deserialized(manager -> {
-      // Do something when loaded
-  });
-    
-  // you can ignore `null`, it just asks for a MinecraftServer
-  // (for server config only as serverconfig are relative to world)
-  // true indicates whether the config will save later after load or not
-  // ^ saves new value (and delete unregistered value)
-  MANAGER.loadSpecific(ConfigHelper.ConfigType.STARTUP, null, true);
-}
-```
-- This config library is mainly made for my mods,
-this means updates of this library follows the development of my other mod.
-- Experimental mod; use at your own risk
-- Library compatibility between client-server platform:
-
-| Platform                   | Server without RW / Vanilla | Server with RW |
-|----------------------------|-----------------------------|----------------|
-| Fabric Client (with RW)    | supported                   | supported      |
-| Fabric Client (without RW) | -                           | supported*     |
-| NeoForge (with RW)         | unsupported                 | supported      |
-| NeoForge (without RW)      | -                           | unsupported*   |
-*not tested
+- **Config:** A Json configuration manager well-equipped with:
+  - **`ConfigManager`:** The core of the config that manages writing/reading Json file
+    - Gets their own folder to store `ConfigFile`s
+  - **`ConfigFile`:** Represent the Json file of the config
+    - Multiple environment type (common, client, server, startup)
+    - Automatic loading and syncing
+      - Sync common and server config environment to players
+      - Compress and split large data into chunks
+    - External changes detection
+  - **`ConfigOption`:** Pack `ConfigValue` or another `ConfigOption`
+  - **`ConfigValue`:** An extensible class that represents the value of the config
+    - Utilize custom codec class (`ConfigCodec`) to allow a more versatile serialization
+    - Premade include:
+      - Basic types (string, boolean, integer, float, double, long)
+      - Custom types (Identifier, Color, UUID, Time)
+      - List and maps
+- **Data Generation Helper Class:** Helper interfaces to avoid typing the same code over and over.
+  - `IModelGeneratable` add generation method for item model and block state model generation
+  - `ITranslationGeneratable` add generation method for translation
+  - `IBlockLootTableGeneratable` add generation for block loot table generation
+- **Common Classes:** Implements some data generation helper and adding some helpers
+  - `BaseSyncedBlockEntity` is a block entity class that sync block entity data to the client
+  - `BaseStorageBlockEntity` is a `BaseSyncedBlockEntity` class that add and manages inventory
+    - Implements `IStorage`
+  - `BaseBlock` & `BaseBlockWithEntity` implements `IModelGeneratable`, `ITranslationGeneratable`, and `IBlockLootTableGeneratable`
+    - Drop items when the block is broken and a block entity in that position extends `BaseStorageBlockEntity`
+  - `BaseItem` implements `IModelGeneratable`, `ITranslationGeneratable`
+- **Utilities:** Some _utilitary_ class to help some stuff
+  - `DirectionalVoxelShape` generates all VoxelShape rotated to other directions (north by default, east, south, west, up, down)
+  - `IStorage` is an implemented inventory interface
+  - `BaseRecipeJsonBuilder` is a Json recipe builder that can be extended to make custom recipes
+  - `IFancyLogging` makes printing a bit more _stylized_ (if the console/log supports)

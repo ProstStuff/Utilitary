@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "utilitary",
+  "version": "${version}",
+  "name": "Utilitary",
+  "description": "When there's not enough utilities to ease modding development.",
+  "authors": ["ProstStuff"],
+  "contact": {
+    "homepage": "https://modrinth.com/project/reconstruct-what",
+    "sources": "https://github.com/ProstStuff/Reconstruct-What",
+    "issues": "https://github.com/ProstStuff/Reconstruct-What/issues"
+  },
+  "license": "All Rights Reserved",
+  "icon": "assets/utilitary/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.proststuff.utilitary.Utilitary"
+    ],
+    "client": [
+      "dev.proststuff.utilitary.Utilitary"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.17.3",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  },
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/u6ENkVyyd4",
+        "modmenu.modrinth": "https://modrinth.com/mod/reconstruct-what",
+        "modmenu.youtube": "https://www.youtube.com/@ProstStuff"
+      },
+      "update_checker": false,
+      "badges": [ "library" ]
+    }
+  }
+}
