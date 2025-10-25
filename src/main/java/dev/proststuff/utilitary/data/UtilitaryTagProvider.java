@@ -34,7 +34,7 @@ public abstract class UtilitaryTagProvider<T> extends FabricTagProvider<T> {
         UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
 
         for (TagKey<?> tagKey : tagKeys) {
-            if (tagKey.isOf(registryRef)) {
+            if (tagKey.registry().equals(tag.registry())) {
                 tagBuilder.addTag((TagKey<T>) tagKey);
             }
         }
@@ -52,7 +52,7 @@ public abstract class UtilitaryTagProvider<T> extends FabricTagProvider<T> {
         UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
 
         for (TagKey<?> tagKey : tagKeys) {
-            if (tagKey.isOf(registryRef)) {
+            if (tagKey.registry().equals(tag.registry())) {
                 tagBuilder.addOptionalTag((TagKey<T>) tagKey);
             }
         }

@@ -11,7 +11,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public abstract class UtilitaryModelProvider extends FabricModelProvider {
-    protected FabricDataOutput output;
+    protected final FabricDataOutput output;
 
     public UtilitaryModelProvider(FabricDataOutput output) {
         super(output);

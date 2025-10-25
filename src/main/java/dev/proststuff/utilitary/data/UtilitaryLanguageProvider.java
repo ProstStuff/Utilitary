@@ -19,6 +19,11 @@ public abstract class UtilitaryLanguageProvider extends FabricLanguageProvider {
         this.languageCode = languageCode;
     }
 
+    protected UtilitaryLanguageProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+        super(dataOutput, "en_us", registryLookup);
+        this.languageCode = "en_us";
+    }
+
     @Override
     public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder translationBuilder) {
         iterateAndTranslate(translationBuilder, Registries.BLOCK);
