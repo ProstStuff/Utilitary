@@ -21,6 +21,11 @@ public abstract class BaseBlock extends Block implements ILanguageGeneratable, I
     }
 
     @Override
+    public boolean useBlockAsItemModel() {
+        return true;
+    }
+
+    @Override
     public String getTranslation(String lang) {
         Identifier identifier = RegistryUtil.getIdentifierOrThrow(Registries.BLOCK, this);
         return StringUtil.format(identifier.getPath());

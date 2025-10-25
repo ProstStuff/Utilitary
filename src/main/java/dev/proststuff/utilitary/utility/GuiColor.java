@@ -9,6 +9,7 @@ import net.minecraft.util.Formatting;
 public enum GuiColor {
     WHITE(Formatting.WHITE),
     BLACK(Formatting.BLACK),
+    LIGHT_GRAY(0xFFC6C6C6), // Bedrock use #C6C6C6, Java use #AAAAAA
     GRAY(Formatting.GRAY),
     DARK_GRAY(Formatting.DARK_GRAY),
     RED(Formatting.RED),
@@ -23,6 +24,20 @@ public enum GuiColor {
     DARK_AQUA(Formatting.DARK_AQUA),
     LIGHT_PURPLE(Formatting.LIGHT_PURPLE),
     DARK_PURPLE(Formatting.DARK_PURPLE),
+
+    // Bedrock color codes
+    MINECOIN_GOLD(0xFFDDD605),
+    MATERIAL_QUARTZ(0xFFE3D4D1),
+    MATERIAL_IRON(0xFFCECACA),
+    MATERIAL_NETHERITE(0xFF443A3B),
+    MATERIAL_REDSTONE(0xFF971607),
+    MATERIAL_COPPER(0xB4684D),
+    MATERIAL_GOLD(0xFFDEB12D),
+    MATERIAL_EMERALD(0xFF119F36),
+    MATERIAL_DIAMOND(0xFF2CBAA8),
+    MATERIAL_LAPIS(0xFF21497B),
+    MATERIAL_AMETHYSTS(0xFF9A5CC6),
+    //MATERIAL_RESIN(0xFFEB7114),
 
     BACKGROUND(0xAA000000),
     FOREGROUND(0xCCFFFFFF),

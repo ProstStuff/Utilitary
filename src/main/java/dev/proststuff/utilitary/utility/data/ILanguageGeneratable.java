@@ -1,6 +1,6 @@
 package dev.proststuff.utilitary.utility.data;
 
 public interface ILanguageGeneratable {
-    String getTranslationKey();
-    String getTranslation(String lang);
+    default String getTranslationKey() {return "";}
+    default String getTranslation(String lang) {return "";}
 }

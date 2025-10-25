@@ -30,6 +30,11 @@ public abstract class BaseBlockWithEntity extends BlockWithEntity implements ILa
     }
 
     @Override
+    public boolean useBlockAsItemModel() {
+        return true;
+    }
+
+    @Override
     public String getTranslation(String lang) {
         Identifier identifier = RegistryUtil.getIdentifierOrThrow(Registries.BLOCK, this);
         return StringUtil.format(identifier.getPath());
