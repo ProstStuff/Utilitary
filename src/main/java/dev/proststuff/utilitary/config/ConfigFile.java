@@ -40,7 +40,7 @@ public class ConfigFile extends ConfigBase<ConfigOption> {
             return Utilitary.SERVER.getSavePath(WorldSavePath.DATAPACKS).getParent().resolve("serverconfig").resolve(manager.NAME).resolve(name + ".json");
         }
 
-        return Path.of("config", manager.NAME, getName() + ".json");
+        return Path.of("config", manager.NAME, name + ".json");
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ConfigFile extends ConfigBase<ConfigOption> {
             JsonObject encoded = encode().getAsJsonObject();
             GSON.toJson(encoded, writer);
         } catch (IOException e) {
-            manager.error(e.getMessage());
+            manager.errorWithStackTrace(e, "Unable to write {}.json to {}", name, configFilePath.getParent());
         }
     }
 
@@ -97,10 +97,17 @@ public class ConfigFile extends ConfigBase<ConfigOption> {
 
             if (exists) {
                 try (Reader reader = Files.newBufferedReader(configFilePath)) {
-                    JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
-                    decode(json);
+                    JsonElement json = JsonParser.parseReader(reader);
+
+                    if (!json.isJsonObject()) {
+                        manager.warn("Json file of {}.json is not a JsonObject", name);
+                        shouldWrite = true;
+                    } else {
+                        JsonObject obj = json.getAsJsonObject();
+                        decode(obj);
+                    }
                 } catch (IOException e) {
-                    manager.error(e.getMessage());
+                    manager.errorWithStackTrace(e, "Unable to read {}.json, fallback to default and save new value", name);
                     shouldWrite = true;
                 }
             } else {
@@ -130,7 +137,7 @@ public class ConfigFile extends ConfigBase<ConfigOption> {
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
-            manager.error(e.getMessage());
+            manager.errorWithStackTrace(e, "Unable to create directory for {}", path);
         }
     }
 }

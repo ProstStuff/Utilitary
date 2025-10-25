@@ -54,7 +54,7 @@ public class ConfigFileWatcher {
                 configFile.getConfigManager().info(IFancyLogging.LogType.SUB, "Watched {}.json", configFile.getName(), configFile.getConfigManager().NAME);
             }
         } catch (Exception e) {
-            configFile.getConfigManager().warn(e.getMessage());
+            configFile.getConfigManager().errorWithStackTrace(e);
         }
     }
 
@@ -84,10 +84,13 @@ public class ConfigFileWatcher {
 
                                 if (lastModifiedTimes.getOrDefault(changedAbsolute, 0L) + 100 < currentTime) {
                                     lastModifiedTimes.put(changedAbsolute, currentTime);
+
                                     watchedConfigFile.read();
                                 }
                             }
                         }
+
+                        ConfigManager.sync();
                     }
 
                     key.reset();
@@ -96,7 +99,7 @@ public class ConfigFileWatcher {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
                 if (configManager.get() != null) {
-                    configManager.get().warn(e.getMessage());
+                    configManager.get().errorWithStackTrace(e);
                 }
             }
         });
@@ -117,7 +120,7 @@ public class ConfigFileWatcher {
 
             Utilitary.UTILITARY_CONFIG.info("Stopped watching all of {} config", configEnvironment);
         } catch (Exception e) {
-            Utilitary.UTILITARY_CONFIG.error(e.getLocalizedMessage());
+            Utilitary.UTILITARY_CONFIG.errorWithStackTrace(e, "Can't stop watching {} config", configEnvironment);
         }
     }
 }

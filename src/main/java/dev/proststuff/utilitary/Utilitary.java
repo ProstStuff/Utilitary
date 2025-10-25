@@ -21,15 +21,20 @@ import net.minecraft.server.MinecraftServer;
 public class Utilitary implements ModInitializer, ClientModInitializer {
 	public static final String ID = "utilitary";
 	public static final String NAME = "Utilitary";
-	public static final ConfigManager UTILITARY_CONFIG = new ConfigManager(NAME).setDebugEnable(FabricLoader.getInstance().isDevelopmentEnvironment());
+	public static final ConfigManager UTILITARY_CONFIG = new ConfigManager(NAME, "Utilitary Core").setDebugEnable(FabricLoader.getInstance().isDevelopmentEnvironment());
 
 	public static MinecraftServer SERVER;
 
+	private static final ConfigBool debug = (ConfigBool) new ConfigBool("debug", false).listen(v -> {
+		UTILITARY_CONFIG.setDebugEnable(v.get());
+		UTILITARY_CONFIG.info("Debug enabled");
+	});
 	static {
 		UTILITARY_CONFIG.newFile("utilitaryStartup", ConfigEnvironment.STARTUP)
-				.add(new ConfigBool("debug", false).listen((v) -> UTILITARY_CONFIG.setDebugEnable(v.get())))
+				.add(debug)
 				.add(new ConfigString("introduction", "This is a startup config, all startup config is loaded at the start of Utilitary onInitialize(), common is loaded at the end of the library onInitialize()"))
-				.add(new ConfigString("tips", "It is recommended to use a static initializer to register your config"));
+				.add(new ConfigString("tips", "It is recommended to use a static initializer to register your config"))
+				.add(new ConfigString("note", "Config is loaded asynchronously, use `.listen()` to detect changes or when the value is loaded"));
 
 		UTILITARY_CONFIG.newFile("utilities_common", ConfigEnvironment.COMMON)
 				.add(new ConfigBool("enabled", true))
@@ -59,6 +64,7 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 	@Override
 	public void onInitialize() {
 		ConfigManager.loadFor(ConfigEnvironment.STARTUP);
+
 		PayloadTypeRegistry.playS2C().register(ServerBoundConfigSyncPacket.ID, ServerBoundConfigSyncPacket.PACKET_CODEC);
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			SERVER = server;
@@ -75,10 +81,7 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ClientPlayNetworking.registerGlobalReceiver(ServerBoundConfigSyncPacket.ID, (packet, context) -> {
-			context.client().execute(() -> ClientConfigSync.receiveChunk(packet));
-		});
-
+		ClientPlayNetworking.registerGlobalReceiver(ServerBoundConfigSyncPacket.ID, (packet, context) -> context.client().execute(() -> ClientConfigSync.receiveChunk(packet)));
 		ConfigManager.loadFor(ConfigEnvironment.CLIENT);
 	}
 }

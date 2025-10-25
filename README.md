@@ -31,6 +31,7 @@ Formerly called **RECONSTRUCT WHAT!?**,
   - `IModelGeneratable` add generation method for item model and block state model generation
   - `ITranslationGeneratable` add generation method for translation
   - `IBlockLootTableGeneratable` add generation for block loot table generation
+  - `ITagProviderUtil` add some helper methods when implemented to a `TagProvider`
 - **Common Classes:** Implements some data generation helper and adding some helpers
   - `BaseSyncedBlockEntity` is a block entity class that sync block entity data to the client
   - `BaseStorageBlockEntity` is a `BaseSyncedBlockEntity` class that add and manages inventory
@@ -38,8 +39,12 @@ Formerly called **RECONSTRUCT WHAT!?**,
   - `BaseBlock` & `BaseBlockWithEntity` implements `IModelGeneratable`, `ITranslationGeneratable`, and `IBlockLootTableGeneratable`
     - Drop items when the block is broken and a block entity in that position extends `BaseStorageBlockEntity`
   - `BaseItem` implements `IModelGeneratable`, `ITranslationGeneratable`
-- **Utilities:** Some _utilitary_ class to help some stuff
-  - `DirectionalVoxelShape` generates all VoxelShape rotated to other directions (north by default, east, south, west, up, down)
+- **Utilities:** Some _utilitary_ class
+  - `DirectionalVoxelShape` generates VoxelShapes rotated to other directions (north by default, east, south, west, up, down)
   - `IStorage` is an implemented inventory interface
   - `BaseRecipeJsonBuilder` is a Json recipe builder that can be extended to make custom recipes
   - `IFancyLogging` makes printing a bit more _stylized_ (if the console/log supports)
+  - `DamageTypeBuilder` easily creates `DamageType` for data generation
+  - `TextBuilder` allow control over Text manipulation (similar to Create's `Lang` class)
+  - `GuiColor` for rendering colored ui
+  - Other utils (`StringUtil`, `RandomUtil`, `RegistryUtil`)

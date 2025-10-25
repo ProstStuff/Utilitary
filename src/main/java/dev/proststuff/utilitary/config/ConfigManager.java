@@ -1,6 +1,7 @@
 package dev.proststuff.utilitary.config;
 
 import com.google.gson.JsonElement;
+import dev.proststuff.utilitary.Utilitary;
 import dev.proststuff.utilitary.utility.IFancyLogging;
 import dev.proststuff.utilitary.utility.config.ConfigEnvironment;
 import dev.proststuff.utilitary.utility.config.ConfigPress;
@@ -29,15 +30,19 @@ public class ConfigManager implements IFancyLogging {
     
     private boolean debug = false;
 
-    public ConfigManager(String name) {
+    public ConfigManager(String name, String loggerName) {
         for (ConfigManager manager : managers) {
             if (manager.NAME.equals(name)) throw new IllegalStateException("Another mod is using the same Reconstruct What's ConfigManager.");
         }
 
         this.NAME = name;
-        this.LOGGER = LoggerFactory.getLogger(name + " (Config)");
+        this.LOGGER = LoggerFactory.getLogger(loggerName);
 
         managers.add(this);
+    }
+
+    public ConfigManager(String name) {
+        this(name, name + " (Config)");
     }
     
     public ConfigManager setDebugEnable(boolean enable) {
@@ -60,14 +65,6 @@ public class ConfigManager implements IFancyLogging {
 
         configFiles.add(file);
         return file;
-    }
-
-    public void save() {
-        save(null);
-    }
-
-    public void load() {
-        load(null, true);
     }
 
     public void save(ConfigEnvironment configEnvironment) {
@@ -130,7 +127,17 @@ public class ConfigManager implements IFancyLogging {
         }
     }
 
+    public static void sync() {
+        if (Utilitary.SERVER != null) {
+            for (ServerPlayerEntity player : Utilitary.SERVER.getPlayerManager().getPlayerList()) {
+                syncToPlayer(player);
+            }
+        }
+    }
+
     public static void syncToPlayer(ServerPlayerEntity serverPlayer) {
+        if (!ServerPlayNetworking.canSend(serverPlayer, ServerBoundConfigSyncPacket.ID)) return;
+
         for (ConfigManager manager : managers) {
             for (ConfigFile configFile : manager.configFiles) {
                 if (configFile.getEnvironment() == ConfigEnvironment.COMMON || configFile.getEnvironment() == ConfigEnvironment.SERVER) {
@@ -163,7 +170,7 @@ public class ConfigManager implements IFancyLogging {
                         }
 
                     } catch (IOException e) {
-                        manager.error("Failed to compress config for '{}': {}", manager.NAME, e);
+                        manager.errorWithStackTrace(e, "Unable to compress and send {}.json to {}", configFile.name, serverPlayer.getName());
                     }
                 }
             }

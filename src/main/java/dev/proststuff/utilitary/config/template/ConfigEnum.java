@@ -33,6 +33,6 @@ public class ConfigEnum<E extends Enum<E>> extends ConfigValue<E> {
             }
         }
 
-        getConfigManager().error("Unknown enum value of ConfigEnum: {} for {}", name, getName());
+        getConfigManager().warn("Unknown enum value of ConfigEnum: {} for {}", name, getName());
     }
 }

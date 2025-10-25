@@ -30,7 +30,7 @@ public record ConfigCodec<T>(Function<T, JsonElement> encoder, Function<JsonElem
                     String name = json.getAsString();
                     try {
                         return Enum.valueOf(enumClass, name.toUpperCase());
-                    } catch (IllegalArgumentException ex) {
+                    } catch (IllegalArgumentException e) {
                         return enumClass.getEnumConstants()[0];
                     }
                 }

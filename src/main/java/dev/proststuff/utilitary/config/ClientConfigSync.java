@@ -24,15 +24,21 @@ public class ClientConfigSync {
     }
 
     public static void receiveChunk(ServerBoundConfigSyncPacket packet) {
-        String mangerName = packet.managerName();
+        String managerName = packet.managerName();
+        ConfigManager configManager = ConfigManager.getManager(managerName);
 
-        chunkTimestamps.put(mangerName, System.currentTimeMillis());
-        pendingChunks.computeIfAbsent(mangerName, k -> new ArrayList<>()).add(packet.data());
+        if (configManager == null) {
+            Utilitary.UTILITARY_CONFIG.error("This client does not have a ConfigManager with name {}", managerName);
+            return;
+        }
+
+        chunkTimestamps.put(managerName, System.currentTimeMillis());
+        pendingChunks.computeIfAbsent(managerName, k -> new ArrayList<>()).add(packet.data());
 
         if (packet.index() + 1 == packet.total()) {
             try {
-                byte[] allData = Base64.getDecoder().decode(String.join("", pendingChunks.remove(mangerName)));
-                chunkTimestamps.remove(mangerName);
+                byte[] allData = Base64.getDecoder().decode(String.join("", pendingChunks.remove(managerName)));
+                chunkTimestamps.remove(managerName);
 
                 byte[] decompressed = packet.isCompressed()
                         ? ConfigPress.decompress(allData)
@@ -40,16 +46,16 @@ public class ClientConfigSync {
 
                 String jsonStr = new String(decompressed, StandardCharsets.UTF_8);
                 JsonObject json = JsonParser.parseString(jsonStr).getAsJsonObject();
-                ConfigManager manager = ConfigManager.getManagerOrThrow(mangerName);
+                ConfigManager manager = ConfigManager.getManagerOrThrow(managerName);
 
                 manager.info("Received and decompressed '{}' config ({} chunks)",
-                        mangerName, packet.total());
+                        managerName, packet.total());
 
                 if (manager.getConfigFile(packet.configFileName()) != null) {
                     manager.getConfigFile(packet.configFileName()).decode(json);
                 }
             } catch (Exception e) {
-                Utilitary.UTILITARY_CONFIG.error("Failed to decode config for '{}': {}", mangerName, e);
+                configManager.errorWithStackTrace(e, "Unable to decompress received config data");
             }
         }
     }
@@ -65,8 +71,12 @@ public class ClientConfigSync {
                 it.remove();
                 pendingChunks.remove(managerName);
 
-                ConfigManager manager = ConfigManager.getManagerOrThrow(managerName);
-                manager.warn("Timeout: Discarded incomplete sync");
+                ConfigManager configManager = ConfigManager.getManager(managerName);
+                if (configManager == null) {
+                    Utilitary.UTILITARY_CONFIG.error("This client does not have a ConfigManager with name {}, but their config data is discarded due to timeout", managerName);
+                    return;
+                }
+                configManager.warn("Timeout: Discarded incomplete sync");
             }
         }
     }

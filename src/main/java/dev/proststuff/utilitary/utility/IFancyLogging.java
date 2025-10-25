@@ -23,6 +23,24 @@ public interface IFancyLogging {
     }
     default void error(String format, Object... args) {error(LogType.ERROR, format, args);}
 
+    default void errorWithStackTrace(Exception exception, String prefixMessage, Object... args) {
+        String message = exception.getMessage() != null ? exception.getMessage() : exception.toString();
+        getLogger().error(LogType.ERROR.format((prefixMessage != null ? prefixMessage + "; " : "") + message), args);
+        getLogger().trace("Stacktrace:", exception);
+    }
+    default void errorWithStackTrace(Exception exception) {
+        errorWithStackTrace(exception, "");
+    }
+
+    default void warnWithStackTrace(Exception exception, String prefixMessage, Object... args) {
+        String message = exception.getMessage() != null ? exception.getMessage() : exception.toString();
+        getLogger().warn(LogType.WARN.format((prefixMessage != null ? prefixMessage + "; " : "") + message), args);
+        getLogger().trace("Stacktrace:", exception);
+    }
+    default void warnWithStackTrace(Exception exception) {
+        warnWithStackTrace(exception, "");
+    }
+
     enum LogType {
         ACTION("→"),
         SUB("↳"),
@@ -33,6 +51,6 @@ public interface IFancyLogging {
 
         private final String symbol;
         LogType(String symbol) { this.symbol = symbol; }
-        public String format(String formatTo) { return symbol + " " + formatTo; }
+        public String format(String formatTo) { return symbol + "|  " + formatTo; }
     }
 }

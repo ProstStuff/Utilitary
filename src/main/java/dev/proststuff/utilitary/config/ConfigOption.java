@@ -84,6 +84,5 @@ public class ConfigOption extends ConfigBase<List<ConfigBase<?>>> {
             JsonElement child = json.get(name);
             entry.decode(child);
         }
-
     }
 }
