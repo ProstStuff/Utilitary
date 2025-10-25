@@ -27,58 +27,43 @@ public abstract class UtilitaryTagProvider<T> extends FabricTagProvider<T> {
         super(output, registryKey, registriesFuture);
     }
 
-    @Override
-    protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {}
-
     protected void addTagsTo(TagKey<T> tag, TagKey<?>... tagKeys) {
-        UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
-
         for (TagKey<?> tagKey : tagKeys) {
-            if (tagKey.registry().equals(tag.registry())) {
-                tagBuilder.addTag((TagKey<T>) tagKey);
+            if (tagKey.isOf(registryRef)) {
+                getOrCreateTagBuilder(tag).forceAddTag((TagKey<T>) tagKey);
             }
         }
     }
 
     protected void addOptionalTagsTo(TagKey<T> tag, Identifier... tagKeys) {
-        UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
-
         for (Identifier tagKey : tagKeys) {
-            tagBuilder.addOptionalTag(tagKey);
+            getOrCreateTagBuilder(tag).addOptionalTag(tagKey);
         }
     }
 
     protected void addOptionalTagsTo(TagKey<T> tag, TagKey<?>... tagKeys) {
-        UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
-
         for (TagKey<?> tagKey : tagKeys) {
-            if (tagKey.registry().equals(tag.registry())) {
-                tagBuilder.addOptionalTag((TagKey<T>) tagKey);
+            if (tagKey.isOf(registryRef)) {
+                getOrCreateTagBuilder(tag).addOptionalTag((TagKey<T>) tagKey);
             }
         }
     }
 
     protected void addTo(TagKey<T> tag, T... objects) {
-        UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
-
         for (T object : objects) {
-            tagBuilder.add(object);
+            getOrCreateTagBuilder(tag).add(object);
         }
     }
 
     protected void addOptionalsTo(TagKey<T> tag, Identifier... objects) {
-        UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
-
         for (Identifier object : objects) {
-            tagBuilder.addOptional(object);
+            getOrCreateTagBuilder(tag).addOptional(object);
         }
     }
 
     protected void addOptionalsTo(TagKey<T> tag, RegistryKey<? extends T>... objects) {
-        UtilitaryTagProvider<T>.FabricTagBuilder tagBuilder = getOrCreateTagBuilder(tag);
-
         for (RegistryKey<? extends T> object : objects) {
-            tagBuilder.addOptional(object);
+            getOrCreateTagBuilder(tag).addOptional(object);
         }
     }
 
@@ -121,7 +106,7 @@ public abstract class UtilitaryTagProvider<T> extends FabricTagProvider<T> {
 
         public void copy(TagKey<Block> blockTag, TagKey<Item> itemTag) {
             TagBuilder blockTagBuilder = Objects.requireNonNull(this.blockTagBuilderProvider, "Pass Block tag provider via constructor to use copy").apply(blockTag);
-            TagBuilder itemTagBuilder = this.getTagBuilder(itemTag);
+            TagBuilder itemTagBuilder = getTagBuilder(itemTag);
             blockTagBuilder.build().forEach(itemTagBuilder::add);
         }
 
