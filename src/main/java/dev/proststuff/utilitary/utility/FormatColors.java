@@ -6,10 +6,10 @@ import net.minecraft.util.Formatting;
  * Color enum class similar to Minecraft Formatting but for rendering (draw text need alpha color)
  * @see Formatting
  */
-public enum GuiColor {
+public enum FormatColors {
     WHITE(Formatting.WHITE),
     BLACK(Formatting.BLACK),
-    LIGHT_GRAY(0xFFC6C6C6), // Bedrock use #C6C6C6, Java use #AAAAAA
+    LIGHT_GRAY(0xFFC6C6C6), // Bedrock use #C6C6C6, Java use #AAAAAA, they're lighter
     GRAY(Formatting.GRAY),
     DARK_GRAY(Formatting.DARK_GRAY),
     RED(Formatting.RED),
@@ -39,6 +39,7 @@ public enum GuiColor {
     MATERIAL_AMETHYSTS(0xFF9A5CC6),
     //MATERIAL_RESIN(0xFFEB7114),
 
+    // Others
     BACKGROUND(0xAA000000),
     FOREGROUND(0xCCFFFFFF),
     BORDER(0x55FFFFFF),
@@ -49,12 +50,12 @@ public enum GuiColor {
 
     private final int color;
 
-    GuiColor(Formatting format) {
+    FormatColors(Formatting format) {
         Integer base = format.getColorValue();
         this.color = (base != null) ? 0xFF000000 | base : 0xFFFFFFFF;
     }
 
-    GuiColor(int color) {
+    FormatColors(int color) {
         this.color = color;
     }
 

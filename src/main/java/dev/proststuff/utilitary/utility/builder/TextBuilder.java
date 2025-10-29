@@ -47,7 +47,7 @@ public class TextBuilder {
         return this;
     }
 
-    public TextBuilder style(Formatting... formats) {
+    public TextBuilder format(Formatting... formats) {
         base.formatted(formats);
         return this;
     }
@@ -57,8 +57,23 @@ public class TextBuilder {
         return this;
     }
 
+    public TextBuilder obfuscated() {
+        base.formatted(Formatting.OBFUSCATED);
+        return this;
+    }
+
     public TextBuilder bold() {
         base.formatted(Formatting.BOLD);
+        return this;
+    }
+
+    public TextBuilder strikethrough() {
+        base.formatted(Formatting.STRIKETHROUGH);
+        return this;
+    }
+
+    public TextBuilder underline() {
+        base.formatted(Formatting.UNDERLINE);
         return this;
     }
 
@@ -67,36 +82,32 @@ public class TextBuilder {
         return this;
     }
 
-    public TextBuilder gray() {
-        base.formatted(Formatting.GRAY);
+    public TextBuilder reset() {
+        this.format(Formatting.RESET);
         return this;
     }
 
-    public TextBuilder gold() {
-        base.formatted(Formatting.GOLD);
-        return this;
+    public TextBuilder prefix(String prefix) {
+        return new TextBuilder(Text.literal(prefix)
+                .append(base.copy()));
     }
 
-    public TextBuilder green() {
-        base.formatted(Formatting.GREEN);
-        return this;
+    public TextBuilder suffix(String suffix) {
+        return new TextBuilder(base.copy().append(Text.literal(suffix)));
     }
 
-    public TextBuilder darkGray() {
-        base.formatted(Formatting.DARK_GRAY);
-        return this;
+    public TextBuilder between(String prefix, String suffix) {
+        return new TextBuilder(Text.literal(prefix)
+                .append(base.copy())
+                .append(Text.literal(suffix)));
     }
 
     public TextBuilder bracketed() {
-        return new TextBuilder(Text.literal("[")
-                .append(base.copy())
-                .append(Text.literal("]")));
+        return between("[", "]");
     }
 
     public TextBuilder parentheses() {
-        return new TextBuilder(Text.literal("(")
-                .append(base.copy())
-                .append(Text.literal(")")));
+        return between("(", ")");
     }
 
     public MutableText build() {

@@ -14,7 +14,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -27,43 +26,19 @@ public abstract class UtilitaryTagProvider<T> extends FabricTagProvider<T> {
         super(output, registryKey, registriesFuture);
     }
 
-    protected void addTagsTo(TagKey<T> tag, TagKey<?>... tagKeys) {
-        for (TagKey<?> tagKey : tagKeys) {
+    protected void addTagTo(TagKey<T> tag, TagKey<?>... addToTags) {
+        for (TagKey<?> tagKey : addToTags) {
+            if (tagKey.isOf(registryRef)) {
+                getOrCreateTagBuilder((TagKey<T>) tagKey).forceAddTag(tag);
+            }
+        }
+    }
+
+    protected void addTagsInto(TagKey<T> tag, TagKey<?>... addIntoTags) {
+        for (TagKey<?> tagKey : addIntoTags) {
             if (tagKey.isOf(registryRef)) {
                 getOrCreateTagBuilder(tag).forceAddTag((TagKey<T>) tagKey);
             }
-        }
-    }
-
-    protected void addOptionalTagsTo(TagKey<T> tag, Identifier... tagKeys) {
-        for (Identifier tagKey : tagKeys) {
-            getOrCreateTagBuilder(tag).addOptionalTag(tagKey);
-        }
-    }
-
-    protected void addOptionalTagsTo(TagKey<T> tag, TagKey<?>... tagKeys) {
-        for (TagKey<?> tagKey : tagKeys) {
-            if (tagKey.isOf(registryRef)) {
-                getOrCreateTagBuilder(tag).addOptionalTag((TagKey<T>) tagKey);
-            }
-        }
-    }
-
-    protected void addTo(TagKey<T> tag, T... objects) {
-        for (T object : objects) {
-            getOrCreateTagBuilder(tag).add(object);
-        }
-    }
-
-    protected void addOptionalsTo(TagKey<T> tag, Identifier... objects) {
-        for (Identifier object : objects) {
-            getOrCreateTagBuilder(tag).addOptional(object);
-        }
-    }
-
-    protected void addOptionalsTo(TagKey<T> tag, RegistryKey<? extends T>... objects) {
-        for (RegistryKey<? extends T> object : objects) {
-            getOrCreateTagBuilder(tag).addOptional(object);
         }
     }
 

@@ -7,6 +7,8 @@ import dev.proststuff.utilitary.config.ServerBoundConfigSyncPacket;
 import dev.proststuff.utilitary.config.template.ConfigBool;
 import dev.proststuff.utilitary.config.template.ConfigColor;
 import dev.proststuff.utilitary.config.template.ConfigString;
+import dev.proststuff.utilitary.persistent.PersistentDataSyncPacket;
+import dev.proststuff.utilitary.persistent.PersistentDataUtil;
 import dev.proststuff.utilitary.utility.config.ConfigEnvironment;
 import dev.proststuff.utilitary.utility.config.ConfigFileWatcher;
 import net.fabricmc.api.ClientModInitializer;
@@ -15,8 +17,10 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class Utilitary implements ModInitializer, ClientModInitializer {
 	public static final String ID = "utilitary";
@@ -29,6 +33,7 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 		UTILITARY_CONFIG.setDebugEnable(v.get());
 		UTILITARY_CONFIG.info("Debug enabled");
 	});
+
 	static {
 		UTILITARY_CONFIG.newFile("utilitaryStartup", ConfigEnvironment.STARTUP)
 				.add(debug)
@@ -66,15 +71,32 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 		ConfigManager.loadFor(ConfigEnvironment.STARTUP);
 
 		PayloadTypeRegistry.playS2C().register(ServerBoundConfigSyncPacket.ID, ServerBoundConfigSyncPacket.PACKET_CODEC);
+		PayloadTypeRegistry.playS2C().register(PersistentDataSyncPacket.ID, PersistentDataSyncPacket.PACKET_CODEC);
+		PayloadTypeRegistry.playC2S().register(PersistentDataSyncPacket.ID, PersistentDataSyncPacket.PACKET_CODEC);
+
+		ServerPlayNetworking.registerGlobalReceiver(PersistentDataSyncPacket.ID, (payload, context) -> {
+			ServerPlayerEntity player = context.player();
+			context.server().execute(() -> PersistentDataUtil.sendAllData(player));
+		});
+
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			SERVER = server;
 			ConfigManager.loadFor(ConfigEnvironment.SERVER);
 		});
+
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			SERVER = null;
 			ConfigFileWatcher.stopWatching(ConfigEnvironment.SERVER);
 		});
-		ServerPlayerEvents.JOIN.register(ConfigManager::syncToPlayer);
+
+		ServerPlayerEvents.JOIN.register(serverPlayer -> {
+			ConfigManager.syncToPlayer(serverPlayer);
+			PersistentDataUtil.sendAllData(serverPlayer);
+		});
+
+		ServerPlayerEvents.AFTER_RESPAWN.register(((oldPlayer, newPlayer, alive) -> {
+			PersistentDataUtil.sendAllData(newPlayer);
+		}));
 
 		ConfigManager.loadFor(ConfigEnvironment.COMMON);
 	}
@@ -82,6 +104,9 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(ServerBoundConfigSyncPacket.ID, (packet, context) -> context.client().execute(() -> ClientConfigSync.receiveChunk(packet)));
+		ClientPlayNetworking.registerGlobalReceiver(PersistentDataSyncPacket.ID, (packet, context) -> {
+			context.client().execute(() -> PersistentDataUtil.updateClientCache(packet.data()));
+		});
 		ConfigManager.loadFor(ConfigEnvironment.CLIENT);
 	}
 }

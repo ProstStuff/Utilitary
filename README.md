@@ -31,7 +31,7 @@ Formerly called **RECONSTRUCT WHAT!?**,
   - `IModelGeneratable` add generation method for item model and block state model generation
   - `ITranslationGeneratable` add generation method for translation
   - `IBlockLootTableGeneratable` add generation for block loot table generation
-  - `ITagProviderUtil` add some helper methods when implemented to a `TagProvider`
+  - Some extended provider with auto-generation and additional helpers
 - **Common Classes:** Implements some data generation helper and adding some helpers
   - `BaseSyncedBlockEntity` is a block entity class that sync block entity data to the client
   - `BaseStorageBlockEntity` is a `BaseSyncedBlockEntity` class that add and manages inventory
@@ -46,5 +46,5 @@ Formerly called **RECONSTRUCT WHAT!?**,
   - `IFancyLogging` makes printing a bit more _stylized_ (if the console/log supports)
   - `DamageTypeBuilder` easily creates `DamageType` for data generation
   - `TextBuilder` allow control over Text manipulation (similar to Create's `Lang` class)
-  - `GuiColor` for rendering colored ui
+  - `FormatColors` to easily renders color text without needing to assign color everytime
   - Other utils (`StringUtil`, `RandomUtil`, `RegistryUtil`)
