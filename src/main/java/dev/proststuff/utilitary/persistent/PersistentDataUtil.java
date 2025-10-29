@@ -1,5 +1,6 @@
 package dev.proststuff.utilitary.persistent;
 
+import dev.proststuff.utilitary.Utilitary;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -28,12 +29,12 @@ public class PersistentDataUtil {
 
     public static void sendAllData(ServerPlayerEntity player) {
         NbtCompound data = ((IPersistentData) player).utilitary$getPersistentDataSet();
-        ServerPlayNetworking.send(player, PersistentDataSyncPacket.send(data));
+        ServerPlayNetworking.send(player, PersistentDataSyncPacket.sendAll(data));
     }
 
     public static void sendModData(ServerPlayerEntity player, String modId) {
         NbtCompound data = getServer(player, modId);
-        ServerPlayNetworking.send(player, PersistentDataSyncPacket.send(data));
+        ServerPlayNetworking.send(player, PersistentDataSyncPacket.sendForMod(data, modId));
     }
 
     // Client side
@@ -48,14 +49,18 @@ public class PersistentDataUtil {
         return clientCache.getCompound(modId);
     }
 
-    // Manual data request
+    // Manual client data request
     @Environment(EnvType.CLIENT)
     public static void requestData() {
         ClientPlayNetworking.send(PersistentDataSyncPacket.request());
     }
 
     @Environment(EnvType.CLIENT)
-    public static void updateClientCache(NbtCompound data) {
-        clientCache.copyFrom(data);
+    public static void updateClientCache(PersistentDataSyncPacket packet) {
+        if (!packet.modId().equals(Utilitary.ID)) {
+            clientCache.getCompound(packet.modId()).copyFrom(packet.data());
+        } else {
+            clientCache.copyFrom(packet.data());
+        }
     }
 }

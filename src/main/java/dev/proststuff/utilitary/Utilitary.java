@@ -105,7 +105,7 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(ServerBoundConfigSyncPacket.ID, (packet, context) -> context.client().execute(() -> ClientConfigSync.receiveChunk(packet)));
 		ClientPlayNetworking.registerGlobalReceiver(PersistentDataSyncPacket.ID, (packet, context) -> {
-			context.client().execute(() -> PersistentDataUtil.updateClientCache(packet.data()));
+			context.client().execute(() -> PersistentDataUtil.updateClientCache(packet));
 		});
 		ConfigManager.loadFor(ConfigEnvironment.CLIENT);
 	}
