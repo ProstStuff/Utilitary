@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 public class ConfigBool extends ConfigValue<Boolean> {
     public ConfigBool(String name, Boolean value) {
@@ -11,7 +10,7 @@ public class ConfigBool extends ConfigValue<Boolean> {
 
     @Override
     public ConfigCodec<Boolean> getCodec() {
-        return ConfigCodecs.BOOLEAN;
+        return ConfigCodec.BOOLEAN;
     }
 
     public boolean toggle() {

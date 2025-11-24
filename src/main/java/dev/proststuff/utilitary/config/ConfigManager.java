@@ -2,9 +2,9 @@ package dev.proststuff.utilitary.config;
 
 import com.google.gson.JsonElement;
 import dev.proststuff.utilitary.Utilitary;
-import dev.proststuff.utilitary.utility.IFancyLogging;
-import dev.proststuff.utilitary.utility.config.ConfigEnvironment;
-import dev.proststuff.utilitary.utility.config.ConfigPress;
+import dev.proststuff.utilitary.utility.FancyLogging;
+import dev.proststuff.utilitary.config.utility.ConfigEnvironment;
+import dev.proststuff.utilitary.config.utility.ConfigCompressor;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ConfigManager implements IFancyLogging {
+public class ConfigManager implements FancyLogging {
     private static final ExecutorService configExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "Reconstruct What Config Thread"));
     private static final List<ConfigManager> managers = new ArrayList<>();
 
@@ -128,8 +128,8 @@ public class ConfigManager implements IFancyLogging {
     }
 
     public static void sync() {
-        if (Utilitary.SERVER != null) {
-            for (ServerPlayerEntity player : Utilitary.SERVER.getPlayerManager().getPlayerList()) {
+        if (Utilitary.getServer() != null) {
+            for (ServerPlayerEntity player : Utilitary.getServer().getPlayerManager().getPlayerList()) {
                 syncToPlayer(player);
             }
         }
@@ -144,7 +144,7 @@ public class ConfigManager implements IFancyLogging {
                     JsonElement jsonData = configFile.encode();
 
                     try {
-                        byte[] compressed = ConfigPress.compress(jsonData.toString().getBytes(StandardCharsets.UTF_8));
+                        byte[] compressed = ConfigCompressor.compress(jsonData.toString().getBytes(StandardCharsets.UTF_8));
 
                         final int MAX_CHUNK_SIZE = 512 * 1024;
                         int totalChunks = (int) Math.ceil((double) compressed.length / MAX_CHUNK_SIZE);

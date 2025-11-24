@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 public class ConfigInt extends ConfigValue<Integer> {
     protected final int min;
@@ -20,7 +19,7 @@ public class ConfigInt extends ConfigValue<Integer> {
 
     @Override
     public ConfigCodec<Integer> getCodec() {
-        return ConfigCodecs.INT;
+        return ConfigCodec.INT;
     }
 
     @Override

@@ -6,9 +6,9 @@
   "description": "When there's not enough utilities to ease modding development.",
   "authors": ["ProstStuff"],
   "contact": {
-    "homepage": "https://modrinth.com/project/reconstruct-what",
-    "sources": "https://github.com/ProstStuff/Reconstruct-What",
-    "issues": "https://github.com/ProstStuff/Reconstruct-What/issues"
+    "homepage": "https://modrinth.com/project/utilitary",
+    "sources": "https://github.com/ProstStuff/Utilitary",
+    "issues": "https://github.com/ProstStuff/Utilitary/issues"
   },
   "license": "All Rights Reserved",
   "icon": "assets/utilitary/icon.png",
@@ -37,7 +37,7 @@
     "modmenu": {
       "links": {
         "modmenu.discord": "https://discord.gg/u6ENkVyyd4",
-        "modmenu.modrinth": "https://modrinth.com/mod/reconstruct-what",
+        "modmenu.modrinth": "https://modrinth.com/mod/utilitary",
         "modmenu.youtube": "https://www.youtube.com/@ProstStuff"
       },
       "update_checker": false,

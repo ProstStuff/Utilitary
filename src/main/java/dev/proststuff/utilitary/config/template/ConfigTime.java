@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 import java.time.Duration;
 
@@ -13,7 +12,7 @@ public class ConfigTime extends ConfigValue<Long> {
 
     @Override
     public ConfigCodec<Long> getCodec() {
-        return ConfigCodecs.TIME;
+        return ConfigCodec.TIME;
     }
 
     @Override

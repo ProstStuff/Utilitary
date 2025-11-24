@@ -2,7 +2,7 @@ package dev.proststuff.utilitary.config;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.proststuff.utilitary.utility.IFancyLogging;
+import dev.proststuff.utilitary.utility.FancyLogging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class ConfigOption extends ConfigBase<List<ConfigBase<?>>> {
         JsonObject jsonObject = new JsonObject();
 
         for (ConfigBase<?> entry : entries) {
-            getConfigManager().info(IFancyLogging.LogType.SUB, "Encoding {}", entry.name);
+            getConfigManager().info(FancyLogging.LogType.SUB, "Encoding {}", entry.name);
             if (entry instanceof ConfigValue<?> value && !value.isRuntimeOnly()) {
                 jsonObject.add(value.getName(), value.encode());
             } else {
@@ -79,7 +79,7 @@ public class ConfigOption extends ConfigBase<List<ConfigBase<?>>> {
         JsonObject json = element.getAsJsonObject();
 
         for (ConfigBase<?> entry : entries) {
-            getConfigManager().info(IFancyLogging.LogType.SUB, "Decoding {}", entry.name);
+            getConfigManager().info(FancyLogging.LogType.SUB, "Decoding {}", entry.name);
             String name = entry.getName();
             JsonElement child = json.get(name);
             entry.decode(child);

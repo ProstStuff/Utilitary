@@ -1,7 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 import java.util.ArrayList;
 import java.util.List;

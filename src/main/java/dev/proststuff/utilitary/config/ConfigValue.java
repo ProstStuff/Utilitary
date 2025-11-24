@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config;
 
 import com.google.gson.JsonElement;
-import dev.proststuff.utilitary.utility.IFancyLogging;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
+import dev.proststuff.utilitary.utility.FancyLogging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public abstract class ConfigValue<T> extends ConfigBase<T> {
         return this;
     }
 
-    public ConfigValue<T> listen(Consumer<ConfigValue<T>> listener) {
+    public ConfigValue<T> changed(Consumer<ConfigValue<T>> listener) {
         changedListeners.add(listener);
         listener.accept(this);
         return this;
@@ -39,7 +38,7 @@ public abstract class ConfigValue<T> extends ConfigBase<T> {
     public abstract ConfigCodec<T> getCodec();
 
     public void changed() {
-        getConfigManager().info(IFancyLogging.LogType.ACTION, "ConfigValue changed, {} changed to {}", oldValue, value);
+        getConfigManager().info(FancyLogging.LogType.ACTION, "ConfigValue changed, {} changed to {}", oldValue, value);
         for (Consumer<ConfigValue<T>> changedListener : changedListeners) {
             changedListener.accept(this);
         }

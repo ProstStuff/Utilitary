@@ -1,7 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 public class ConfigEnum<E extends Enum<E>> extends ConfigValue<E> {
     private final ConfigCodec<E> codec;

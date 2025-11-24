@@ -3,7 +3,7 @@
   "package": "dev.proststuff.utilitary.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "PlayerEntityPersistentDataMixins"
+    "ILanguageCodeAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

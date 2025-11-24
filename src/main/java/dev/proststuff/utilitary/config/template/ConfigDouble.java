@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 public class ConfigDouble extends ConfigValue<Double> {
     protected final Double min;
@@ -20,7 +19,7 @@ public class ConfigDouble extends ConfigValue<Double> {
 
     @Override
     public ConfigCodec<Double> getCodec() {
-        return ConfigCodecs.DOUBLE;
+        return ConfigCodec.DOUBLE;
     }
 
     @Override

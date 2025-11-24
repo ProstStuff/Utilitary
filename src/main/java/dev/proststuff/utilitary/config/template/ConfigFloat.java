@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 public class ConfigFloat extends ConfigValue<Float> {
     protected final Float min;
@@ -20,7 +19,7 @@ public class ConfigFloat extends ConfigValue<Float> {
 
     @Override
     public ConfigCodec<Float> getCodec() {
-        return ConfigCodecs.FLOAT;
+        return ConfigCodec.FLOAT;
     }
 
     @Override

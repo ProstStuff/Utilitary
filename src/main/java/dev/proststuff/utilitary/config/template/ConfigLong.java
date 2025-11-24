@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 public class ConfigLong extends ConfigValue<Long> {
     protected final Long min;
@@ -20,7 +19,7 @@ public class ConfigLong extends ConfigValue<Long> {
 
     @Override
     public ConfigCodec<Long> getCodec() {
-        return ConfigCodecs.LONG;
+        return ConfigCodec.LONG;
     }
 
     @Override

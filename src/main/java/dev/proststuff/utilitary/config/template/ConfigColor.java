@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 
 import java.awt.*;
 
@@ -22,7 +21,7 @@ public class ConfigColor extends ConfigValue<Color> {
 
     @Override
     public ConfigCodec<Color> getCodec() {
-        return ConfigCodecs.COLOR;
+        return ConfigCodec.COLOR;
     }
 
     public int getRed() {return value.getRed();}

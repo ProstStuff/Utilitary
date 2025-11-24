@@ -2,10 +2,10 @@ package dev.proststuff.utilitary.config;
 
 import com.google.gson.*;
 import dev.proststuff.utilitary.Utilitary;
-import dev.proststuff.utilitary.utility.IFancyLogging;
-import dev.proststuff.utilitary.utility.config.ConfigEnvironment;
-import dev.proststuff.utilitary.utility.config.ConfigFileWatcher;
-import dev.proststuff.utilitary.utility.config.gson.ConfigValueAdapter;
+import dev.proststuff.utilitary.utility.FancyLogging;
+import dev.proststuff.utilitary.config.utility.ConfigEnvironment;
+import dev.proststuff.utilitary.config.utility.ConfigFileWatcher;
+import dev.proststuff.utilitary.config.utility.gson.ConfigValueAdapter;
 import net.minecraft.util.WorldSavePath;
 
 import java.io.IOException;
@@ -18,6 +18,9 @@ public class ConfigFile extends ConfigBase<ConfigOption> {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ConfigValue.class, new ConfigValueAdapter<>())
             .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .setLenient()
+            .serializeNulls()
             .create();
     private static final Object configLock = new Object();
 
@@ -36,8 +39,8 @@ public class ConfigFile extends ConfigBase<ConfigOption> {
         }
 
         if (this.environment == ConfigEnvironment.SERVER) {
-            if (Utilitary.SERVER == null) throw new IllegalStateException("Unable to fetch MinecraftServer for " + name + " config");
-            return Utilitary.SERVER.getSavePath(WorldSavePath.DATAPACKS).getParent().resolve("serverconfig").resolve(manager.NAME).resolve(name + ".json");
+            if (Utilitary.getServer() == null) throw new IllegalStateException("Unable to fetch server for " + name + " config");
+            return Utilitary.getServer().getSavePath(WorldSavePath.DATAPACKS).getParent().resolve("serverconfig").resolve(manager.NAME).resolve(name + ".json");
         }
 
         return Path.of("config", manager.NAME, name + ".json");
@@ -73,7 +76,7 @@ public class ConfigFile extends ConfigBase<ConfigOption> {
     public void write() {
         manager.info("Writing {}.json file", name);
         if (root.getEntries().isEmpty()) {
-            manager.warn(IFancyLogging.LogType.SUB, "Empty config entries. {}.json will not be created.", name);
+            manager.warn(FancyLogging.LogType.SUB, "Empty config entries. {}.json will not be created.", name);
             return;
         }
 

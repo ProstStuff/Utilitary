@@ -3,7 +3,7 @@ package dev.proststuff.utilitary.config;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.proststuff.utilitary.Utilitary;
-import dev.proststuff.utilitary.utility.config.ConfigPress;
+import dev.proststuff.utilitary.config.utility.ConfigCompressor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -28,7 +28,7 @@ public class ClientConfigSync {
         ConfigManager configManager = ConfigManager.getManager(managerName);
 
         if (configManager == null) {
-            Utilitary.UTILITARY_CONFIG.error("This client does not have a ConfigManager with name {}", managerName);
+            Utilitary.CONFIG.error("This client does not have a ConfigManager with name {}", managerName);
             return;
         }
 
@@ -41,7 +41,7 @@ public class ClientConfigSync {
                 chunkTimestamps.remove(managerName);
 
                 byte[] decompressed = packet.isCompressed()
-                        ? ConfigPress.decompress(allData)
+                        ? ConfigCompressor.decompress(allData)
                         : allData;
 
                 String jsonStr = new String(decompressed, StandardCharsets.UTF_8);
@@ -73,7 +73,7 @@ public class ClientConfigSync {
 
                 ConfigManager configManager = ConfigManager.getManager(managerName);
                 if (configManager == null) {
-                    Utilitary.UTILITARY_CONFIG.error("This client does not have a ConfigManager with name {}, but their config data is discarded due to timeout", managerName);
+                    Utilitary.CONFIG.error("This client does not have a ConfigManager with name {}, but their config data is discarded due to timeout", managerName);
                     return;
                 }
                 configManager.warn("Timeout: Discarded incomplete sync");

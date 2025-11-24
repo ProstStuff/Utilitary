@@ -1,8 +1,7 @@
 package dev.proststuff.utilitary.config.template;
 
 import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.utility.config.ConfigCodec;
-import dev.proststuff.utilitary.utility.config.ConfigCodecs;
+import dev.proststuff.utilitary.config.ConfigCodec;
 import net.minecraft.util.Identifier;
 
 public class ConfigIdentifier extends ConfigValue<Identifier> {
@@ -12,6 +11,6 @@ public class ConfigIdentifier extends ConfigValue<Identifier> {
 
     @Override
     public ConfigCodec<Identifier> getCodec() {
-        return ConfigCodecs.IDENTIFIER;
+        return ConfigCodec.IDENTIFIER;
     }
 }
