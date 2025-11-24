@@ -1,6 +1,9 @@
 package dev.proststuff.utilitary;
 
-import dev.proststuff.utilitary.config.*;
+import dev.proststuff.utilitary.config.ClientConfigSync;
+import dev.proststuff.utilitary.config.ConfigManager;
+import dev.proststuff.utilitary.config.ConfigOption;
+import dev.proststuff.utilitary.config.ServerBoundConfigSyncPacket;
 import dev.proststuff.utilitary.config.template.ConfigBool;
 import dev.proststuff.utilitary.config.template.ConfigColor;
 import dev.proststuff.utilitary.config.template.ConfigString;
@@ -71,6 +74,7 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 	@Override
 	public void onInitialize() {
 		ConfigManager.loadFor(ConfigEnvironment.STARTUP);
+		PersistentData.register();
 
 		PayloadTypeRegistry.playS2C().register(ServerBoundConfigSyncPacket.ID, ServerBoundConfigSyncPacket.PACKET_CODEC);
 		PayloadTypeRegistry.playS2C().register(PersistentDataSyncPacket.ID, PersistentDataSyncPacket.PACKET_CODEC);
@@ -103,9 +107,7 @@ public class Utilitary implements ModInitializer, ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(ServerBoundConfigSyncPacket.ID, (packet, context) -> context.client().execute(() -> ClientConfigSync.receiveChunk(packet)));
-		ClientPlayNetworking.registerGlobalReceiver(PersistentDataSyncPacket.ID, (packet, context) -> {
-			context.client().execute(() -> PersistentDataClient.update(packet));
-		});
+		ClientPlayNetworking.registerGlobalReceiver(PersistentDataSyncPacket.ID, (packet, context) -> {context.client().execute(() -> PersistentDataClient.update(packet));});
 
 		ConfigManager.loadFor(ConfigEnvironment.CLIENT);
 	}

@@ -5,7 +5,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-// TODO: Client sync
 public class PersistentData {
     public static PersistentState.Type<PersistentDataState> PLAYER_PERSISTENT_DATA = new PersistentState.Type<>(
             PersistentDataState::new,
