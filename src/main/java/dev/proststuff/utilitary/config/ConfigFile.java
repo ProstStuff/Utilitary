@@ -1,146 +1,148 @@
 package dev.proststuff.utilitary.config;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dev.proststuff.utilitary.Utilitary;
-import dev.proststuff.utilitary.utility.FancyLogging;
 import dev.proststuff.utilitary.config.utility.ConfigEnvironment;
-import dev.proststuff.utilitary.config.utility.ConfigFileWatcher;
+import dev.proststuff.utilitary.config.utility.UtilitaryFileWatcher;
 import dev.proststuff.utilitary.config.utility.gson.ConfigValueAdapter;
-import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.Identifier;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 
-public class ConfigFile extends ConfigBase<ConfigOption> {
-    public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(ConfigValue.class, new ConfigValueAdapter<>())
-            .setPrettyPrinting()
-            .disableHtmlEscaping()
-            .setLenient()
-            .serializeNulls()
-            .create();
-    private static final Object configLock = new Object();
+public class ConfigFile extends ConfigBase {
+    private static final Gson GSON = ConfigValueAdapter.GSON;
+    private static final Object LOCK = new Object();
 
-    protected final ConfigOption root;
+    protected final ConfigGroup ROOT;
     protected final ConfigEnvironment environment;
 
-    public ConfigFile(String name, ConfigEnvironment configEnvironment) {
+    public ConfigFile(Identifier name, ConfigEnvironment environment) {
         super(name);
-        this.environment = configEnvironment;
-        this.root = new ConfigOption(name);
+        this.ROOT = new ConfigGroup(name);
+        this.environment = environment;
     }
 
-    public Path getFilePath() {
-        if (manager == null) {
-            throw new IllegalStateException("ConfigManager is null.");
-        }
-
-        if (this.environment == ConfigEnvironment.SERVER) {
-            if (Utilitary.getServer() == null) throw new IllegalStateException("Unable to fetch server for " + name + " config");
-            return Utilitary.getServer().getSavePath(WorldSavePath.DATAPACKS).getParent().resolve("serverconfig").resolve(manager.NAME).resolve(name + ".json");
-        }
-
-        return Path.of("config", manager.NAME, name + ".json");
+    public ConfigEnvironment getEnvironment() {
+        return environment;
     }
 
-    @Override
-    public void setConfigManager(ConfigManager configManager) {
-        super.setConfigManager(configManager);
-        root.setConfigManager(getConfigManager());
+    public Path getPath() {
+        return Path.of("config", identifier.getNamespace(), identifier.getPath() + ".json");
     }
 
-    @Override
-    public ConfigOption get() {return root;}
-    @Override
-    public ConfigOption getDefault() {return root;}
-    public ConfigEnvironment getEnvironment() {return environment;}
+    public ConfigGroup get() {
+        return ROOT;
+    }
 
-    public ConfigFile add(ConfigBase<?> config) {
-        root.add(config);
+    public ConfigFile add(ConfigBase configBase) {
+        ROOT.add(configBase);
         return this;
     }
 
     @Override
     public JsonElement encode() {
-        return root.encode();
+        return ROOT.encode();
     }
 
     @Override
     public void decode(JsonElement element) {
-        root.decode(element);
+        ROOT.decode(element);
     }
 
     public void write() {
-        manager.info("Writing {}.json file", name);
-        if (root.getEntries().isEmpty()) {
-            manager.warn(FancyLogging.LogType.SUB, "Empty config entries. {}.json will not be created.", name);
-            return;
-        }
+        synchronized (LOCK) {
+            Path target = getPath();
+            createDirectory(target.getParent());
 
-        Path configFilePath = getFilePath();
-        createDirectory(configFilePath.getParent());
+            Path tempFile = target.resolveSibling(target.getFileName() + ".tmp");
 
-        try (Writer writer = Files.newBufferedWriter(configFilePath)) {
-            JsonObject encoded = encode().getAsJsonObject();
-            GSON.toJson(encoded, writer);
-        } catch (IOException e) {
-            manager.errorWithStackTrace(e, "Unable to write {}.json to {}", name, configFilePath.getParent());
+            try (Writer writer = Files.newBufferedWriter(
+                    tempFile,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            )) {
+                JsonObject encoded = encode().getAsJsonObject();
+                GSON.toJson(encoded, writer);
+            } catch (IOException e) {
+                Utilitary.LOGGER.error("Unable to write config. Got {}", String.valueOf(e));
+                return;
+            }
+
+            try {
+                Files.move(
+                        tempFile,
+                        target,
+                        StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE
+                );
+            } catch (IOException e) {
+                Utilitary.LOGGER.error("Unable to replace config. Got {}", String.valueOf(e));
+            }
         }
     }
 
     public void read() {
-        manager.info("Reading {}.json file", name);
-        synchronized (configLock) {
-            Path configFilePath = getFilePath();
-            boolean exists = Files.exists(getFilePath());
+        synchronized (LOCK) {
+            Path configFilePath = getPath();
             boolean shouldWrite = false;
 
-            if (exists) {
-                try (Reader reader = Files.newBufferedReader(configFilePath)) {
-                    JsonElement json = JsonParser.parseReader(reader);
-
-                    if (!json.isJsonObject()) {
-                        manager.warn("Json file of {}.json is not a JsonObject", name);
+            if (Files.exists(configFilePath)) {
+                try {
+                    String raw = Files.readString(configFilePath, StandardCharsets.UTF_8);
+                    if (raw.isBlank()) {
                         shouldWrite = true;
                     } else {
-                        JsonObject obj = json.getAsJsonObject();
-                        decode(obj);
+                        JsonElement json = JsonParser.parseString(raw);
+
+                        if (!json.isJsonObject()) {
+                            shouldWrite = true;
+                        } else {
+                            decode(json.getAsJsonObject());
+                        }
                     }
-                } catch (IOException e) {
-                    manager.errorWithStackTrace(e, "Unable to read {}.json, fallback to default and save new value", name);
+
+                } catch (Exception e) {
+                    Utilitary.LOGGER.error("Unable to read config. Got {}", String.valueOf(e));
                     shouldWrite = true;
                 }
             } else {
                 shouldWrite = true;
             }
-            merge(root);
-            if (shouldWrite) write();
-            ConfigFileWatcher.registerWatch(this);
-        }
-    }
 
-    private void merge(ConfigOption configGroup) {
-        for (ConfigBase<?> entry : configGroup.getEntries()) {
-            if (entry instanceof ConfigValue<?> configValue) {
-                safeSet(configValue);
-            } else if (entry instanceof ConfigOption group) {
-                merge(group);
+            if (shouldWrite) {
+                write();
             }
-        }
-    }
 
-    private static <T> void safeSet(ConfigValue<T> configValue) {
-        if (configValue.get() == null) configValue.set(configValue.getDefault());
+            UtilitaryFileWatcher.registerWatch(this);
+        }
     }
 
     private void createDirectory(Path path) {
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
-            manager.errorWithStackTrace(e, "Unable to create directory for {}", path);
+            Utilitary.LOGGER.error("Unable to register config watch. Got {}", String.valueOf(e));
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+
+        for (ConfigBase child : ROOT.children) {
+            str.append("[").append(child.toString()).append("]");
+        }
+
+        return "ConfigFile$"+ identifier.getPath() +".json${" + str + "}" ;
     }
 }

@@ -1,25 +1,23 @@
 package dev.proststuff.utilitary.config;
 
 import com.google.gson.JsonElement;
+import net.minecraft.util.Identifier;
 
-public abstract class ConfigBase<T> {
-    protected final String name;
-    protected ConfigManager manager;
+public abstract class ConfigBase {
+    protected Identifier identifier;
 
-    public ConfigBase(String name) {
-        this.name = name;
+    public ConfigBase(Identifier identifier) {
+        this.identifier = identifier;
     }
 
-    public String getName() {return name;}
-    public ConfigManager getConfigManager() {return manager;}
+    public Identifier getIdentifier() {
+        return identifier;
+    }
 
-    public abstract T get();
-    public abstract T getDefault();
+    public abstract JsonElement encode();
+    public abstract void decode(JsonElement element);
 
-    public boolean set(T newValue) {return false;}
-    public void setDefault() {set(getDefault());}
-    public void setConfigManager(ConfigManager configManager) {this.manager = configManager;}
-
-    abstract public JsonElement encode();
-    abstract public void decode(JsonElement element);
+    public boolean is(ConfigBase other) {
+        return other.identifier.getNamespace().equals(this.identifier.getNamespace());
+    }
 }

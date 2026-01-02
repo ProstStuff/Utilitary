@@ -1,9 +1,12 @@
-package dev.proststuff.utilitary.config;
+package dev.proststuff.utilitary.config.network;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.proststuff.utilitary.Utilitary;
+import dev.proststuff.utilitary.config.Config;
+import dev.proststuff.utilitary.config.ConfigFile;
 import dev.proststuff.utilitary.config.utility.ConfigCompressor;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -17,28 +20,25 @@ public class ClientConfigSync {
 
     static {
         Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r, "RW Config Sync Thread");
+            Thread t = new Thread(r, "Config Sync Thread");
             t.setDaemon(true);
             return t;
         }).scheduleAtFixedRate(ClientConfigSync::cleanupExpired, 10, 10, TimeUnit.SECONDS);
     }
 
-    public static void receiveChunk(ServerBoundConfigSyncPacket packet) {
-        String managerName = packet.managerName();
-        ConfigManager configManager = ConfigManager.getManager(managerName);
+    public static void receiveChunk(ServerBoundConfigSyncPacket packet, ClientPlayNetworking.Context context) {
+        String name = packet.configName();
+        Config config = Config.getConfig(name);
 
-        if (configManager == null) {
-            Utilitary.CONFIG.error("This client does not have a ConfigManager with name {}", managerName);
-            return;
-        }
+        if (config == null) return;
 
-        chunkTimestamps.put(managerName, System.currentTimeMillis());
-        pendingChunks.computeIfAbsent(managerName, k -> new ArrayList<>()).add(packet.data());
+        chunkTimestamps.put(name, System.currentTimeMillis());
+        pendingChunks.computeIfAbsent(name, k -> new ArrayList<>()).add(packet.data());
 
         if (packet.index() + 1 == packet.total()) {
             try {
-                byte[] allData = Base64.getDecoder().decode(String.join("", pendingChunks.remove(managerName)));
-                chunkTimestamps.remove(managerName);
+                byte[] allData = Base64.getDecoder().decode(String.join("", pendingChunks.remove(name)));
+                chunkTimestamps.remove(name);
 
                 byte[] decompressed = packet.isCompressed()
                         ? ConfigCompressor.decompress(allData)
@@ -46,16 +46,13 @@ public class ClientConfigSync {
 
                 String jsonStr = new String(decompressed, StandardCharsets.UTF_8);
                 JsonObject json = JsonParser.parseString(jsonStr).getAsJsonObject();
-                ConfigManager manager = ConfigManager.getManagerOrThrow(managerName);
+                ConfigFile file = config.get(packet.configFileIdentifier());
 
-                manager.info("Received and decompressed '{}' config ({} chunks)",
-                        managerName, packet.total());
+                if (config.debugEnabled()) config.getLogger().info("Received and decompressing {} of {}.json ({} chunks)", name, packet.configFileIdentifier().getNamespace(), packet.total());
 
-                if (manager.getConfigFile(packet.configFileName()) != null) {
-                    manager.getConfigFile(packet.configFileName()).decode(json);
-                }
+                file.decode(json);
             } catch (Exception e) {
-                configManager.errorWithStackTrace(e, "Unable to decompress received config data");
+                config.getLogger().error("Unable to decompress received config data. Got {}", String.valueOf(e));
             }
         }
     }
@@ -70,13 +67,7 @@ public class ClientConfigSync {
                 String managerName = entry.getKey();
                 it.remove();
                 pendingChunks.remove(managerName);
-
-                ConfigManager configManager = ConfigManager.getManager(managerName);
-                if (configManager == null) {
-                    Utilitary.CONFIG.error("This client does not have a ConfigManager with name {}, but their config data is discarded due to timeout", managerName);
-                    return;
-                }
-                configManager.warn("Timeout: Discarded incomplete sync");
+                Utilitary.LOGGER.warn("Config data timeout. This client might have a desynced {} config data. Proceed with caution.", managerName);
             }
         }
     }

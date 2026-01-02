@@ -1,14 +1,14 @@
-package dev.proststuff.utilitary.config.template;
+package dev.proststuff.utilitary.config.value;
 
-import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.config.ConfigCodec;
+import dev.proststuff.utilitary.config.utility.ConfigCodec;
+import net.minecraft.util.Identifier;
 
 public class ConfigEnum<E extends Enum<E>> extends ConfigValue<E> {
     private final ConfigCodec<E> codec;
     private final Class<E> enumClass;
 
-    public ConfigEnum(String name, Class<E> enumClass, E e) {
-        super(name, e);
+    public ConfigEnum(Identifier identifier, Class<E> enumClass, E e) {
+        super(identifier, e);
         this.enumClass = enumClass;
         this.codec = ConfigCodec.enums(enumClass);
     }
@@ -32,7 +32,5 @@ public class ConfigEnum<E extends Enum<E>> extends ConfigValue<E> {
                 return;
             }
         }
-
-        getConfigManager().warn("Unknown enum value of ConfigEnum: {} for {}", name, getName());
     }
 }

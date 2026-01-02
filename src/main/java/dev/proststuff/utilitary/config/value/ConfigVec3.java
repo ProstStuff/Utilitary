@@ -1,18 +1,19 @@
-package dev.proststuff.utilitary.config.template;
+package dev.proststuff.utilitary.config.value;
 
-import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.config.ConfigCodec;
+import dev.proststuff.utilitary.config.utility.ConfigCodec;
+import dev.proststuff.utilitary.config.utility.ConfigCodecs;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
 public class ConfigVec3 extends ConfigValue<Vec3d> {
-    public ConfigVec3(String name, Vec3d value) {
-        super(name, value);
+    public ConfigVec3(Identifier identifier, Vec3d value) {
+        super(identifier, value);
     }
 
     @Override
     public ConfigCodec<Vec3d> getCodec() {
-        return ConfigCodec.VECTOR3;
+        return ConfigCodecs.VECTOR3;
     }
 
     public Vec3i getAsInteger() {

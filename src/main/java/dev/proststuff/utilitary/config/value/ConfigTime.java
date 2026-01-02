@@ -1,18 +1,19 @@
-package dev.proststuff.utilitary.config.template;
+package dev.proststuff.utilitary.config.value;
 
-import dev.proststuff.utilitary.config.ConfigValue;
-import dev.proststuff.utilitary.config.ConfigCodec;
+import dev.proststuff.utilitary.config.utility.ConfigCodec;
+import dev.proststuff.utilitary.config.utility.ConfigCodecs;
+import net.minecraft.util.Identifier;
 
 import java.time.Duration;
 
 public class ConfigTime extends ConfigValue<Long> {
-    public ConfigTime(String name, Long ms) {
-        super(name, ms);
+    public ConfigTime(Identifier identifier, Long ms) {
+        super(identifier, ms);
     }
 
     @Override
     public ConfigCodec<Long> getCodec() {
-        return ConfigCodec.TIME;
+        return ConfigCodecs.TIME;
     }
 
     @Override

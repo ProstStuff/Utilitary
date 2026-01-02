@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.config;
+package dev.proststuff.utilitary.config.network;
 
 import dev.proststuff.utilitary.Utilitary;
 import io.netty.buffer.ByteBuf;
@@ -8,8 +8,8 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 public record ServerBoundConfigSyncPacket(
-        String managerName,
-        String configFileName,
+        String configName,
+        Identifier configFileIdentifier,
         int index,
         int total,
         String data,
@@ -20,9 +20,9 @@ public record ServerBoundConfigSyncPacket(
 
     public static final PacketCodec<ByteBuf, ServerBoundConfigSyncPacket> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING,
-            ServerBoundConfigSyncPacket::managerName,
-            PacketCodecs.STRING,
-            ServerBoundConfigSyncPacket::configFileName,
+            ServerBoundConfigSyncPacket::configName,
+            Identifier.PACKET_CODEC,
+            ServerBoundConfigSyncPacket::configFileIdentifier,
             PacketCodecs.INTEGER,
             ServerBoundConfigSyncPacket::index,
             PacketCodecs.INTEGER,

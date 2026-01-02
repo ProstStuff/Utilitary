@@ -3,7 +3,6 @@ package dev.proststuff.utilitary.block.state;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Waterloggable;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -21,14 +20,15 @@ public interface SmartWaterloggable extends Waterloggable {
         return state.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
-    default FluidState getFluidState(BlockState state) {
+    default FluidState findFluidState(BlockState state) {
         return state.get(WATERLOGGED)
                 ? Fluids.WATER.getStill(false)
                 : Fluids.EMPTY.getDefaultState();
     }
 
-    default boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, Fluid fluid) {
-        if (!state.get(WATERLOGGED) && fluid == Fluids.WATER) {
+    @Override
+    default boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
+        if (!state.get(WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
             if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WATERLOGGED, true), Block.NOTIFY_ALL);
                 world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));

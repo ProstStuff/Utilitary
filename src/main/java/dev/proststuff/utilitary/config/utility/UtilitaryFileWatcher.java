@@ -1,9 +1,9 @@
 package dev.proststuff.utilitary.config.utility;
 
 import dev.proststuff.utilitary.Utilitary;
+import dev.proststuff.utilitary.config.Config;
 import dev.proststuff.utilitary.config.ConfigFile;
-import dev.proststuff.utilitary.config.ConfigManager;
-import dev.proststuff.utilitary.utility.FancyLogging;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -12,58 +12,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Detects and load external changes when a ConfigFile is modified.
- * ConfigFile is finishRegistration when <code>ConfigFile.read()</code> is called.
- * @see ConfigFile
- */
-@SuppressWarnings("unchecked")
-public class ConfigFileWatcher {
+public class UtilitaryFileWatcher {
     private static final List<ConfigFile> watchedConfigFiles = new ArrayList<>();
     private static WatchService watchService;
     private static ExecutorService watcherExecutor;
 
     public static boolean isConfigFileWatched(ConfigFile configFile) {
         for (ConfigFile watchedConfigFile : watchedConfigFiles) {
-            if (watchedConfigFile.getFilePath().equals(configFile.getFilePath())) return true;
+            if (watchedConfigFile.getPath().equals(configFile.getPath())) return true;
         }
 
         return false;
     }
 
     public static void registerWatch(ConfigFile configFile) {
-        configFile.getConfigManager().info("Preparing to watch {}.json from {}", configFile.getName(), configFile.getConfigManager().NAME);
-
         try {
             if (watchService == null) {
-                configFile.getConfigManager().info(FancyLogging.LogType.SUB, "Starting watcher thread, requested by {}", configFile.getConfigManager().NAME);
                 watchService = FileSystems.getDefault().newWatchService();
                 watcherExecutor = Executors.newSingleThreadExecutor();
                 startWatcherThread();
             }
 
-            Path configFilePath = configFile.getFilePath();
+            Path configFilePath = configFile.getPath();
             Path dir = configFilePath.getParent();
 
             if (!isConfigFileWatched(configFile)) {
-                configFile.getConfigManager().info(FancyLogging.LogType.SUB, "Watching {}.json", configFile.getName(), configFile.getConfigManager().NAME);
                 dir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                 watchedConfigFiles.add(configFile);
-                configFile.getConfigManager().info(FancyLogging.LogType.SUB, "Watched {}.json", configFile.getName(), configFile.getConfigManager().NAME);
             }
         } catch (Exception e) {
-            configFile.getConfigManager().errorWithStackTrace(e);
+            Utilitary.LOGGER.error("Unable to register config watch. Got {}", String.valueOf(e));
         }
     }
 
     private static void startWatcherThread() {
-        AtomicReference<ConfigManager> configManager = new AtomicReference<>();
-
         watcherExecutor.submit(() -> {
             Map<Path, Long> lastModifiedTimes = new HashMap<>();
-            
+
             try {
                 while (!Thread.currentThread().isInterrupted()) {
                     WatchKey key = watchService.take();
@@ -71,13 +57,13 @@ public class ConfigFileWatcher {
                     for (WatchEvent<?> event : key.pollEvents()) {
                         if (event.kind() != StandardWatchEventKinds.ENTRY_MODIFY) continue;
 
+                        @SuppressWarnings("unchecked")
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
                         Path changedFile = ev.context();
                         Path changedAbsolute = ((Path) key.watchable()).resolve(changedFile).toAbsolutePath();
 
                         for (ConfigFile watchedConfigFile : watchedConfigFiles) {
-                            configManager.set(watchedConfigFile.getConfigManager());
-                            Path configFilePath = watchedConfigFile.getFilePath();
+                            Path configFilePath = watchedConfigFile.getPath();
 
                             if (configFilePath.toAbsolutePath().equals(changedAbsolute)) {
                                 long currentTime = System.currentTimeMillis();
@@ -90,7 +76,11 @@ public class ConfigFileWatcher {
                             }
                         }
 
-                        ConfigManager.sync();
+                        if (Utilitary.getServer() != null) {
+                            for (ServerPlayerEntity player : Utilitary.getServer().getPlayerManager().getPlayerList()) {
+                                Config.syncToPlayer(player);
+                            }
+                        }
                     }
 
                     key.reset();
@@ -98,9 +88,7 @@ public class ConfigFileWatcher {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                if (configManager.get() != null) {
-                    configManager.get().errorWithStackTrace(e);
-                }
+                Utilitary.LOGGER.error("Unable to start watch thread. Got {}", String.valueOf(e));
             }
         });
     }
@@ -118,9 +106,9 @@ public class ConfigFileWatcher {
                 watcherExecutor = null;
             }
 
-            Utilitary.CONFIG.info("Stopped watching all of {} config", configEnvironment);
+            if (Utilitary.CONFIG.debugEnabled()) Utilitary.LOGGER.info("Stopped watching all of {} config", configEnvironment);
         } catch (Exception e) {
-            Utilitary.CONFIG.errorWithStackTrace(e, "Can't stop watching {} config", configEnvironment);
+            Utilitary.LOGGER.error("Unable to stop watching. Got {}", String.valueOf(e));
         }
     }
 }
