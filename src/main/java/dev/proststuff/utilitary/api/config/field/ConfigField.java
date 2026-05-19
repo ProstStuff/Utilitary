@@ -1,10 +1,10 @@
-package dev.proststuff.utilitary.api.field;
+package dev.proststuff.utilitary.api.config.field;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
-import dev.proststuff.utilitary.api.codec.ConfigCodec;
-import dev.proststuff.utilitary.api.impl.ConfigSerializable;
+import dev.proststuff.utilitary.api.config.codec.ConfigCodec;
+import dev.proststuff.utilitary.api.config.impl.ConfigSerializable;
 
 public abstract class ConfigField<V> implements ConfigSerializable {
     protected final String name;

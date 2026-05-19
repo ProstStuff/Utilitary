@@ -1,10 +1,10 @@
 package dev.proststuff.utilitary;
 
-import dev.proststuff.utilitary.api.ConfigFile;
-import dev.proststuff.utilitary.api.field.ConfigGroup;
-import dev.proststuff.utilitary.api.field.value.math.ColorConfigField;
-import dev.proststuff.utilitary.api.field.value.BooleanConfigField;
-import dev.proststuff.utilitary.api.field.value.StringConfigField;
+import dev.proststuff.utilitary.api.config.ConfigFile;
+import dev.proststuff.utilitary.api.config.field.ConfigGroup;
+import dev.proststuff.utilitary.api.config.field.value.math.ColorConfigField;
+import dev.proststuff.utilitary.api.config.field.value.BooleanConfigField;
+import dev.proststuff.utilitary.api.config.field.value.StringConfigField;
 import net.minecraft.resources.Identifier;
 
 public class UtilitaryConfigFile extends ConfigFile {

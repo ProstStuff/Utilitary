@@ -1,7 +1,7 @@
-package dev.proststuff.utilitary.api.field.value;
+package dev.proststuff.utilitary.api.config.field.value;
 
-import dev.proststuff.utilitary.api.codec.ConfigCodecs;
-import dev.proststuff.utilitary.api.field.ConfigField;
+import dev.proststuff.utilitary.api.config.codec.ConfigCodecs;
+import dev.proststuff.utilitary.api.config.field.ConfigField;
 
 public class BooleanConfigField extends ConfigField<Boolean> {
     public BooleanConfigField(String name, Boolean value) {

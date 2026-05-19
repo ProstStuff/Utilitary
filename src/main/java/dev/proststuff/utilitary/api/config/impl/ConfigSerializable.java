@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.impl;
+package dev.proststuff.utilitary.api.config.impl;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;

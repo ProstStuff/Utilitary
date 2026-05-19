@@ -1,8 +1,8 @@
-package dev.proststuff.utilitary.api.field.value;
+package dev.proststuff.utilitary.api.config.field.value;
 
 import com.google.common.collect.ImmutableList;
-import dev.proststuff.utilitary.api.codec.ConfigCodec;
-import dev.proststuff.utilitary.api.field.ConfigField;
+import dev.proststuff.utilitary.api.config.codec.ConfigCodec;
+import dev.proststuff.utilitary.api.config.field.ConfigField;
 
 import java.util.Map;
 

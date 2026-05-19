@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.codec;
+package dev.proststuff.utilitary.api.config.codec;
 
 import com.google.gson.*;
 import org.jspecify.annotations.NonNull;

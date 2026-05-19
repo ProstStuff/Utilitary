@@ -1,11 +1,11 @@
-package dev.proststuff.utilitary.api.field;
+package dev.proststuff.utilitary.api.config.field;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import dev.proststuff.utilitary.api.ConfigFile;
-import dev.proststuff.utilitary.api.impl.ConfigSerializable;
+import dev.proststuff.utilitary.api.config.ConfigFile;
+import dev.proststuff.utilitary.api.config.impl.ConfigSerializable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

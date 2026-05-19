@@ -4,9 +4,7 @@
 	"version": "${version}",
 	"name": "Utilitary",
 	"description": "A utilitarian utility library.",
-	"authors": [
-		"ProstStuff"
-	],
+	"authors": ["ProstStuff"],
 	"contact": {
 		"homepage": "https://modrinth.com/project/utilitary",
 		"sources": "https://github.com/ProstStuff/Utilitary",
@@ -16,9 +14,7 @@
 	"icon": "assets/utilitary/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
-			"dev.proststuff.utilitary.Utilitary"
-		]
+		"main": ["dev.proststuff.utilitary.Utilitary"]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.2",

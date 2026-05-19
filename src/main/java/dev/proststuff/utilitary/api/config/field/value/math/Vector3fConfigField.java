@@ -1,7 +1,7 @@
-package dev.proststuff.utilitary.api.field.value.math;
+package dev.proststuff.utilitary.api.config.field.value.math;
 
-import dev.proststuff.utilitary.api.codec.ConfigCodecs;
-import dev.proststuff.utilitary.api.field.ConfigField;
+import dev.proststuff.utilitary.api.config.codec.ConfigCodecs;
+import dev.proststuff.utilitary.api.config.field.ConfigField;
 import org.joml.Vector3f;
 
 public class Vector3fConfigField extends ConfigField<Vector3f> {

@@ -3,8 +3,8 @@ package dev.proststuff.utilitary.api.utility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.Strictness;
-import dev.proststuff.utilitary.api.ConfigFile;
-import dev.proststuff.utilitary.api.ConfigFileSerializer;
+import dev.proststuff.utilitary.api.config.ConfigFile;
+import dev.proststuff.utilitary.api.config.ConfigFileSerializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
-public class UtilitaryJsonUtils {
-    public static final Logger LOGGER = LoggerFactory.getLogger("Utilitary Json Utils");
+public class FileJsonUtils {
+    public static final Logger LOGGER = LoggerFactory.getLogger("Utilitary | FileJsonUtils");
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .disableHtmlEscaping()

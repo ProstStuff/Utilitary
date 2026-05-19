@@ -1,7 +1,7 @@
-package dev.proststuff.utilitary.api.field.value.minecraft;
+package dev.proststuff.utilitary.api.config.field.value.minecraft;
 
-import dev.proststuff.utilitary.api.codec.ConfigCodecs;
-import dev.proststuff.utilitary.api.field.ConfigField;
+import dev.proststuff.utilitary.api.config.codec.ConfigCodecs;
+import dev.proststuff.utilitary.api.config.field.ConfigField;
 import net.minecraft.resources.Identifier;
 
 public class IdentifierConfigField extends ConfigField<Identifier> {

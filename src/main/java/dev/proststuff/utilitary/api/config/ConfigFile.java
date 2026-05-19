@@ -1,12 +1,12 @@
-package dev.proststuff.utilitary.api;
+package dev.proststuff.utilitary.api.config;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import dev.proststuff.utilitary.api.field.value.minecraft.IdentifierConfigField;
-import dev.proststuff.utilitary.api.impl.ConfigSerializable;
-import dev.proststuff.utilitary.api.utility.UtilitaryJsonUtils;
+import dev.proststuff.utilitary.api.config.field.value.minecraft.IdentifierConfigField;
+import dev.proststuff.utilitary.api.config.impl.ConfigSerializable;
+import dev.proststuff.utilitary.api.utility.FileJsonUtils;
 import net.minecraft.resources.Identifier;
 
 import java.nio.file.Path;
@@ -47,7 +47,7 @@ public abstract class ConfigFile implements ConfigSerializable {
     }
 
     public Path getDestination() {
-        return UtilitaryJsonUtils.getConfigPath().resolve(identifier.getNamespace()).resolve(getName() + ".json");
+        return FileJsonUtils.getConfigPath().resolve(identifier.getNamespace()).resolve(getName() + ".json");
     }
 
     @Override
@@ -74,17 +74,19 @@ public abstract class ConfigFile implements ConfigSerializable {
     }
 
     public void save() {
-        UtilitaryJsonUtils.write(getDestination(), this, ConfigFile.class);
+        FileJsonUtils.write(getDestination(), this, ConfigFile.class);
     }
 
     public void load() {
-        UtilitaryJsonUtils.read(getDestination(), ConfigFile.class, () -> this);
+        FileJsonUtils.read(getDestination(), ConfigFile.class, () -> this);
     }
 
-    public void delete() {
-        if (UtilitaryJsonUtils.delete(getDestination())) {
-            remove(identifier);
+    public boolean delete() {
+        if (FileJsonUtils.delete(getDestination())) {
+            return remove(identifier) != null;
         }
+
+        return false;
     }
 
     public static boolean isConfigFile(ConfigSerializable configSerializable) {

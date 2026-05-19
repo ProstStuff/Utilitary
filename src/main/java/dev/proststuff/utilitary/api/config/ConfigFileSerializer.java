@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api;
+package dev.proststuff.utilitary.api.config;
 
 import com.google.gson.*;
 import net.minecraft.resources.Identifier;
