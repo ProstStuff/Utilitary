@@ -5,13 +5,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import dev.proststuff.utilitary.api.config.ConfigFile;
+import dev.proststuff.utilitary.api.config.impl.ConfigFileChild;
 import dev.proststuff.utilitary.api.config.impl.ConfigSerializable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ConfigGroup implements ConfigSerializable {
+public class ConfigGroup implements ConfigFileChild {
     protected final String name;
+    protected ConfigFile configFile;
     public Map<String, ConfigSerializable> children = new LinkedHashMap<>();
 
     public ConfigGroup(String name) {
@@ -38,6 +40,16 @@ public class ConfigGroup implements ConfigSerializable {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void setConfigFile(ConfigFile configFile) {
+        this.configFile = configFile;
+    }
+
+    @Override
+    public ConfigFile getConfigFile() {
+        return configFile;
     }
 
     @Override

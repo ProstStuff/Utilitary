@@ -4,6 +4,7 @@ import com.google.gson.*;
 import net.minecraft.resources.Identifier;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ConfigFileSerializer implements JsonSerializer<ConfigFile>, JsonDeserializer<ConfigFile> {
     @Override
@@ -19,12 +20,16 @@ public class ConfigFileSerializer implements JsonSerializer<ConfigFile>, JsonDes
 
             if (configIdentity != null && !configIdentity.isJsonNull()) {
                 Identifier identifier = Identifier.parse(configIdentity.getAsString());
+                AtomicReference<ConfigFile> atomicConfigFile = new AtomicReference<>();
                 jsonObject.remove("identity");
-                if (ConfigFile.getConfigFiles().containsKey(identifier)) {
-                    ConfigFile configFile = ConfigFile.getConfigFiles().get(identifier);
+
+                ConfigFile.getConfigFiles().computeIfPresent(identifier, (_, configFile) -> {
                     configFile.deserialize(json, context);
+                    atomicConfigFile.set(configFile);
                     return configFile;
-                }
+                });
+
+                return atomicConfigFile.get();
             }
         }
 

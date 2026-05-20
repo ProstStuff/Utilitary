@@ -3,15 +3,20 @@ package dev.proststuff.utilitary.api.config.field;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
+import dev.proststuff.utilitary.api.config.ConfigFile;
 import dev.proststuff.utilitary.api.config.codec.ConfigCodec;
-import dev.proststuff.utilitary.api.config.impl.ConfigSerializable;
+import dev.proststuff.utilitary.api.config.impl.ConfigFileChild;
+import org.jspecify.annotations.Nullable;
 
-public abstract class ConfigField<V> implements ConfigSerializable {
+public abstract class ConfigField<V> implements ConfigFileChild {
     protected final String name;
     protected final V defaultValue;
     protected final ConfigCodec<V> codec;
 
+    protected ConfigFile configFile;
     protected V value;
+    protected V lastSavedValue = null;
+
     public ConfigField(String name, V value, ConfigCodec<V> codec) {
         this.name = name;
         this.defaultValue = value;
@@ -19,8 +24,12 @@ public abstract class ConfigField<V> implements ConfigSerializable {
         this.value = value;
     }
 
-    public final String getName() {
-        return name;
+    public @Nullable V getCleanValue() {
+        return lastSavedValue;
+    }
+
+    public boolean isDirty() {
+        return lastSavedValue != null && lastSavedValue != value;
     }
 
     public String getAsString() {
@@ -40,6 +49,9 @@ public abstract class ConfigField<V> implements ConfigSerializable {
     }
 
     public final void set(V newValue) {
+        if (this.lastSavedValue == null) {
+            this.lastSavedValue = this.value;
+        }
         this.value = validate(newValue);
 
         if (this.value == null) {
@@ -52,7 +64,23 @@ public abstract class ConfigField<V> implements ConfigSerializable {
     }
 
     @Override
+    public final String getName() {
+        return name;
+    }
+
+    @Override
+    public void setConfigFile(ConfigFile configFile) {
+        this.configFile = configFile;
+    }
+
+    @Override
+    public ConfigFile getConfigFile() {
+        return configFile;
+    }
+
+    @Override
     public final JsonElement serialize(JsonSerializationContext context) {
+        lastSavedValue = null;
         return codec.encode(get(), context);
     }
 
