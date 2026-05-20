@@ -6,7 +6,6 @@ import com.google.gson.JsonSerializationContext;
 import dev.proststuff.utilitary.api.config.ConfigFile;
 import dev.proststuff.utilitary.api.config.codec.ConfigCodec;
 import dev.proststuff.utilitary.api.config.impl.ConfigFileChild;
-import org.jspecify.annotations.Nullable;
 
 public abstract class ConfigField<V> implements ConfigFileChild {
     protected final String name;
@@ -24,8 +23,8 @@ public abstract class ConfigField<V> implements ConfigFileChild {
         this.value = value;
     }
 
-    public @Nullable V getCleanValue() {
-        return lastSavedValue;
+    public V getCleanValue() {
+        return lastSavedValue != null ? lastSavedValue : value != null ? value : defaultValue;
     }
 
     public boolean isDirty() {
