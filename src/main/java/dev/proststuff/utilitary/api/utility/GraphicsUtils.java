@@ -20,15 +20,31 @@ public class GraphicsUtils {
         sprite(graphics, texture, x, y, offsetX, offsetY, width, height, textureWidth, textureHeight, 0xFFFFFFFF);
     }
 
-    public static void sprite(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, int textureWidth, int textureHeight) {
-        sprite(graphics, texture, x, y, 0.0F, 0.0F, textureWidth, textureHeight, textureWidth, textureHeight);
+    public static void sprite(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, int width, int height, int textureWidth, int textureHeight, int color) {
+        sprite(graphics, texture, x, y, 0, 0, width, height, textureWidth, textureHeight, color);
     }
 
-    public static void text(GuiGraphicsExtractor graphics, Component text, float xAlignment, float yAlignment, int x, int y, int color) {
+    public static void sprite(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, int width, int height, int textureWidth, int textureHeight) {
+        sprite(graphics, texture, x, y, width, height, textureWidth, textureHeight, 0xFFFFFFFF);
+    }
+
+    public static void sprite(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, int textureWidth, int textureHeight, int color) {
+        sprite(graphics, texture, x, y, textureWidth, textureHeight, textureWidth, textureHeight, color);
+    }
+
+    public static void sprite(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, int textureWidth, int textureHeight) {
+        sprite(graphics, texture, x, y, textureWidth, textureHeight, 0xFFFFFFFF);
+    }
+
+    public static void text(GuiGraphicsExtractor graphics, Component text, float xAlignment, float yAlignment, int x, int y, int color, boolean shadow) {
         Font font = font();
         int height = font.lineHeight;
         int width = font.width(text);
-        graphics.text(font, text, (int) (x - (width * xAlignment)), (int) (y - (height * yAlignment)), color);
+        graphics.text(font, text, (int) (x - (width * xAlignment)), (int) (y - (height * yAlignment)), color, shadow);
+    }
+
+    public static void text(GuiGraphicsExtractor graphics, Component text, float xAlignment, float yAlignment, int x, int y, int color) {
+        text(graphics, text, xAlignment, yAlignment, x, y, color, true);
     }
 
     public static void text(GuiGraphicsExtractor graphics, String text, float xAlignment, float yAlignment, int x, int y, int color) {
@@ -57,6 +73,14 @@ public class GraphicsUtils {
 
     public static void leftText(GuiGraphicsExtractor graphics, String text, float yAlignment, int x, int y, int color) {
         text(graphics, text, 1.0F, yAlignment, x, y, color);
+    }
+
+    public static void outline(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int thickness, int color) {
+
+    }
+
+    public static void outline(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int color) {
+        outline(graphics, x, y, width, height, 1, color);
     }
 
     public static void textHighlight(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int highlightColor, boolean invertText) {
