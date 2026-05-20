@@ -76,7 +76,10 @@ public class GraphicsUtils {
     }
 
     public static void outline(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int thickness, int color) {
-
+        graphics.fill(x, y, x + width, y + thickness, color);
+        graphics.fill(x, y + height - thickness, x + width, y + height, color);
+        graphics.fill(x, y + thickness, x + thickness, y + height - thickness, color);
+        graphics.fill(x + width - thickness, y + thickness, x + width, y + height - thickness, color);
     }
 
     public static void outline(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int color) {
