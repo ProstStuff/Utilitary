@@ -14,7 +14,7 @@ import java.util.Map;
 public class ConfigGroup implements ConfigFileChild {
     protected final String name;
     protected ConfigFile configFile;
-    public Map<String, ConfigSerializable> children = new LinkedHashMap<>();
+    public final Map<String, ConfigSerializable> children = new LinkedHashMap<>();
 
     public ConfigGroup(String name) {
         this.name = name;

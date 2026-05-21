@@ -1,7 +1,7 @@
 package dev.proststuff.utilitary.api.config;
 
 import com.google.gson.*;
-import net.minecraft.resources.Identifier;
+import dev.proststuff.utilitary.api.utility.SimpleIdentifier;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,7 +19,7 @@ public class ConfigFileSerializer implements JsonSerializer<ConfigFile>, JsonDes
             JsonElement configIdentity = jsonObject.get("identity");
 
             if (configIdentity != null && !configIdentity.isJsonNull()) {
-                Identifier identifier = Identifier.parse(configIdentity.getAsString());
+                SimpleIdentifier identifier = SimpleIdentifier.parse(configIdentity.getAsString());
                 AtomicReference<ConfigFile> atomicConfigFile = new AtomicReference<>();
                 jsonObject.remove("identity");
 

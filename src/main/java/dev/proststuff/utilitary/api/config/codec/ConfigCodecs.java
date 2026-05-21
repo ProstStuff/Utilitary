@@ -3,6 +3,7 @@ package dev.proststuff.utilitary.api.config.codec;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 import dev.proststuff.utilitary.api.utility.Color;
+import dev.proststuff.utilitary.api.utility.SimpleIdentifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import org.joml.Vector3d;
@@ -92,6 +93,16 @@ public class ConfigCodecs {
                     return new Color((int) Long.parseLong(hex, 16));
                 }
 
+                return null;
+            }
+    );
+
+    public static final ConfigCodec<SimpleIdentifier> SIMPLE_IDENTIFIER = new ConfigCodec<>(
+            (value, _) -> new JsonPrimitive(value.toString()),
+            (jsonElement, context) -> {
+                if (jsonElement.isJsonPrimitive()) {
+                    return SimpleIdentifier.tryParse(jsonElement.getAsString());
+                }
                 return null;
             }
     );

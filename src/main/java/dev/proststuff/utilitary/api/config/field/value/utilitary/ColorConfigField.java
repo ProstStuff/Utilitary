@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.config.field.value.math;
+package dev.proststuff.utilitary.api.config.field.value.utilitary;
 
 import dev.proststuff.utilitary.api.config.codec.ConfigCodecs;
 import dev.proststuff.utilitary.api.config.field.ConfigField;
@@ -79,26 +79,26 @@ public class ColorConfigField extends ConfigField<Color> {
     }
 
     public int setRed(int r) {
-        return setRed(r);
+        return get().setRed(r);
     }
 
     public int setRed(float r) {
-        return setRed(r * 255);
+        return setRed((int) r * 255);
     }
 
     public int setGreen(int g) {
-        return setGreen(g);
+        return get().setGreen(g);
     }
 
     public int setGreen(float g) {
-        return setGreen(g * 255);
+        return setGreen((int) g * 255);
     }
 
     public int setBlue(int b) {
-       return setBlue(b);
+       return get().setBlue(b);
     }
 
     public int setBlue(float b) {
-        return setBlue(b * 255);
+        return setBlue((int) b * 255);
     }
 }
