@@ -52,11 +52,11 @@ public class GraphicsUtils {
     }
 
     public static void rightText(GuiGraphicsExtractor graphics, Component text, float yAlignment, int x, int y, int color) {
-        text(graphics, text, 0.0F, yAlignment, x, y, color);
+        text(graphics, text, 1.0F, yAlignment, x, y, color);
     }
 
     public static void rightText(GuiGraphicsExtractor graphics, String text, float yAlignment, int x, int y, int color) {
-        text(graphics, text, 0.0F, yAlignment, x, y, color);
+        text(graphics, text, 1.0F, yAlignment, x, y, color);
     }
 
     public static void centerText(GuiGraphicsExtractor graphics, Component text, float yAlignment, int x, int y, int color) {
@@ -68,11 +68,11 @@ public class GraphicsUtils {
     }
 
     public static void leftText(GuiGraphicsExtractor graphics, Component text, float yAlignment, int x, int y, int color) {
-        text(graphics, text, 1.0F, yAlignment, x, y, color);
+        text(graphics, text, 0.0F, yAlignment, x, y, color);
     }
 
     public static void leftText(GuiGraphicsExtractor graphics, String text, float yAlignment, int x, int y, int color) {
-        text(graphics, text, 1.0F, yAlignment, x, y, color);
+        text(graphics, text, 0.0F, yAlignment, x, y, color);
     }
 
     public static void outline(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int thickness, int color) {
