@@ -75,7 +75,7 @@ public record ConfigCodec<V>(Encoder<V> encoder, Decoder<V> decoder) {
                         }
                     }
 
-                    return null;
+                    return map;
                 }
         );
     }

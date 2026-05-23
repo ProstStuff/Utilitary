@@ -4,15 +4,19 @@ import com.google.common.collect.ImmutableList;
 import dev.proststuff.utilitary.api.config.codec.ConfigCodec;
 import dev.proststuff.utilitary.api.config.field.ConfigField;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MapConfigField<V> extends ConfigField<Map<String, V>> {
     public final ImmutableList<Map.Entry<String, V>> defaultMapEntries;
 
-    public MapConfigField(String name, Map<String, V> value, ConfigCodec<V> valueCodec) {
-        super(name, value, ConfigCodec.mapOf(valueCodec, value));
-        this.value = value;
-        this.defaultMapEntries = ImmutableList.copyOf(value.entrySet());
+    public MapConfigField(String name, Map<String, V> map, ConfigCodec<V> valueCodec) {
+        super(name, map, ConfigCodec.mapOf(valueCodec, map));
+        this.defaultMapEntries = ImmutableList.copyOf(map.entrySet());
+    }
+
+    public MapConfigField(String name, ConfigCodec<V> valueCodec) {
+        this(name, new LinkedHashMap<>(), valueCodec);
     }
 
     public V get(String key) {
