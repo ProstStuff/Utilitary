@@ -1,6 +1,7 @@
 package dev.proststuff.utilitary.api.config.codec;
 
 import com.google.gson.*;
+import dev.proststuff.utilitary.Utilitary;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -42,7 +43,7 @@ public record ConfigCodec<V>(Encoder<V> encoder, Decoder<V> decoder) {
                         List<V> list = new ArrayList<>();
 
                         for (JsonElement element : array) {
-                            codec.decode(element, context);
+                            list.add(codec.decode(element, context));
                         }
 
                         return list;
@@ -66,11 +67,16 @@ public record ConfigCodec<V>(Encoder<V> encoder, Decoder<V> decoder) {
                 },
                 (jsonElement, context) -> {
                     if (jsonElement.isJsonObject()) {
+                        map.clear();
                         JsonObject object = jsonElement.getAsJsonObject();
 
                         for (Map.Entry<String, JsonElement> entry : object.asMap().entrySet()) {
-                            if (map.containsKey(entry.getKey())) {
-                                map.put(entry.getKey(), valueCodec.decode(entry.getValue(), context));
+                            V decoded = valueCodec.decode(entry.getValue(), context);
+
+                            if (decoded != null) {
+                                Utilitary.LOGGER.info("{}", decoded);
+                                map.put(entry.getKey(), decoded);
+
                             }
                         }
                     }
