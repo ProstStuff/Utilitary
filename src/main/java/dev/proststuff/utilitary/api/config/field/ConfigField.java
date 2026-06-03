@@ -1,8 +1,6 @@
 package dev.proststuff.utilitary.api.config.field;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonSerializationContext;
 import dev.proststuff.utilitary.api.config.ConfigFile;
 import dev.proststuff.utilitary.api.config.codec.ConfigCodec;
 import dev.proststuff.utilitary.api.config.impl.ConfigFileChild;
@@ -78,13 +76,13 @@ public abstract class ConfigField<V> implements ConfigFileChild {
     }
 
     @Override
-    public final JsonElement serialize(JsonSerializationContext context) {
+    public final JsonElement serialize() {
         lastSavedValue = null;
-        return codec.encode(get(), context);
+        return codec.encode(get());
     }
 
     @Override
-    public final void deserialize(JsonElement jsonElement, JsonDeserializationContext context) {
-        set(codec.decode(jsonElement, context));
+    public final void deserialize(JsonElement jsonElement) {
+        set(codec.decode(jsonElement));
     }
 }

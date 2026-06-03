@@ -1,9 +1,7 @@
 package dev.proststuff.utilitary.api.config.field;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import dev.proststuff.utilitary.api.config.ConfigFile;
 import dev.proststuff.utilitary.api.config.impl.ConfigFileChild;
 import dev.proststuff.utilitary.api.config.impl.ConfigSerializable;
@@ -53,25 +51,25 @@ public class ConfigGroup implements ConfigFileChild {
     }
 
     @Override
-    public JsonElement serialize(JsonSerializationContext context) {
+    public JsonElement serialize() {
         JsonObject serialized = new JsonObject();
 
         for (ConfigSerializable child : children.values()) {
-            serialized.add(child.getName(), child.serialize(context));
+            serialized.add(child.getName(), child.serialize());
         }
 
         return serialized;
     }
 
     @Override
-    public void deserialize(JsonElement jsonElement, JsonDeserializationContext context) {
+    public void deserialize(JsonElement jsonElement) {
         JsonObject serialized = jsonElement.getAsJsonObject();
 
         for (ConfigSerializable child : children.values()) {
             String name = child.getName();
 
             if (serialized.has(name)) {
-                child.deserialize(serialized.get(name), context);
+                child.deserialize(serialized.get(name));
             }
         }
     }

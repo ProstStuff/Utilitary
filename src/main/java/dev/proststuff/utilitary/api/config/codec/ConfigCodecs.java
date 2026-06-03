@@ -12,8 +12,8 @@ import org.joml.Vector3i;
 
 public class ConfigCodecs {
     public static final ConfigCodec<String> STRING = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value),
-            (jsonElement, _) -> {
+            JsonPrimitive::new,
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return jsonElement.getAsString();
                 }
@@ -22,8 +22,8 @@ public class ConfigCodecs {
             });
 
     public static final ConfigCodec<Boolean> BOOLEAN = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value),
-            (jsonElement, _) -> {
+            JsonPrimitive::new,
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return jsonElement.getAsBoolean();
                 }
@@ -33,8 +33,8 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Integer> INTEGER = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value),
-            (jsonElement, _) -> {
+            JsonPrimitive::new,
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return jsonElement.getAsInt();
                 }
@@ -44,8 +44,8 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Float> FLOAT = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value),
-            (jsonElement, _) -> {
+            JsonPrimitive::new,
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return jsonElement.getAsFloat();
                 }
@@ -55,8 +55,8 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Double> DOUBLE = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value),
-            (jsonElement, _) -> {
+            JsonPrimitive::new,
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return jsonElement.getAsDouble();
                 }
@@ -66,8 +66,8 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Long> LONG = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value),
-            (jsonElement, _) -> {
+            JsonPrimitive::new,
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return jsonElement.getAsLong();
                 }
@@ -77,8 +77,8 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Color> COLOR = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value.toString()),
-            (jsonElement, _) -> {
+            (value) -> new JsonPrimitive(value.toString()),
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     String hex = jsonElement.getAsString();
 
@@ -98,8 +98,8 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<SimpleIdentifier> SIMPLE_IDENTIFIER = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value.toString()),
-            (jsonElement, context) -> {
+            (value) -> new JsonPrimitive(value.toString()),
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return SimpleIdentifier.tryParse(jsonElement.getAsString());
                 }
@@ -108,8 +108,8 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Identifier> IDENTIFIER = new ConfigCodec<>(
-            (value, _) -> new JsonPrimitive(value.toString()),
-            (jsonElement, _) -> {
+            (value) -> new JsonPrimitive(value.toString()),
+            (jsonElement) -> {
                 if (jsonElement.isJsonPrimitive()) {
                     return Identifier.parse(jsonElement.getAsString());
                 }
@@ -119,14 +119,14 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<BlockPos> BLOCK_POS = new ConfigCodec<>(
-            (value, _) -> {
+            (value) -> {
                 JsonArray array = new JsonArray();
                 array.add(value.getX());
                 array.add(value.getY());
                 array.add(value.getZ());
                 return array;
             },
-            (jsonElement, _) -> {
+            (jsonElement) -> {
                 if (jsonElement.isJsonArray()) {
                     JsonArray array = jsonElement.getAsJsonArray();
                     return new BlockPos(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt());
@@ -137,14 +137,14 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Vector3i> VECTOR3I = new ConfigCodec<>(
-            (value, _) -> {
+            (value) -> {
                 JsonArray array = new JsonArray();
                 array.add(value.x());
                 array.add(value.y());
                 array.add(value.z());
                 return array;
             },
-            (jsonElement, _) -> {
+            (jsonElement) -> {
                 if (jsonElement.isJsonArray()) {
                     JsonArray array = jsonElement.getAsJsonArray();
                     return new Vector3i(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt());
@@ -155,14 +155,14 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Vector3f> VECTOR3F = new ConfigCodec<>(
-            (value, _) -> {
+            (value) -> {
                 JsonArray array = new JsonArray();
                 array.add(value.x());
                 array.add(value.y());
                 array.add(value.z());
                 return array;
             },
-            (jsonElement, _) -> {
+            (jsonElement) -> {
                 if (jsonElement.isJsonArray()) {
                     JsonArray array = jsonElement.getAsJsonArray();
                     return new Vector3f(array.get(0).getAsFloat(), array.get(1).getAsFloat(), array.get(2).getAsFloat());
@@ -173,14 +173,14 @@ public class ConfigCodecs {
     );
 
     public static final ConfigCodec<Vector3d> VECTOR3D = new ConfigCodec<>(
-            (value, _) -> {
+            (value) -> {
                 JsonArray array = new JsonArray();
                 array.add(value.x());
                 array.add(value.y());
                 array.add(value.z());
                 return array;
             },
-            (jsonElement, _) -> {
+            (jsonElement) -> {
                 if (jsonElement.isJsonArray()) {
                     JsonArray array = jsonElement.getAsJsonArray();
                     return new Vector3d(array.get(0).getAsDouble(), array.get(1).getAsDouble(), array.get(2).getAsDouble());

@@ -17,4 +17,8 @@ public class Utilitary implements ModInitializer {
 			UtilitaryConfigFile.INSTANCE.save();
 		}
 	}
+
+	public static boolean isDevelopmentEnvironment() {
+		return FabricLoader.getInstance().isDevelopmentEnvironment();
+	}
 }

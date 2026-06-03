@@ -1,33 +1,33 @@
 package dev.proststuff.utilitary.api.config;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import dev.proststuff.utilitary.api.config.codec.ConfigCodecs;
+import dev.proststuff.utilitary.api.config.field.ConfigField;
 import dev.proststuff.utilitary.api.config.impl.ConfigFileChild;
 import dev.proststuff.utilitary.api.config.impl.ConfigSerializable;
 import dev.proststuff.utilitary.api.utility.FileJsonUtils;
 import dev.proststuff.utilitary.api.utility.SimpleIdentifier;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class ConfigFile implements ConfigSerializable {
     private static final Map<SimpleIdentifier, ConfigFile> CONFIG_FILES = new LinkedHashMap<>();
 
-    protected final SimpleIdentifier identifier;
+    protected @NonNull SimpleIdentifier identifier;
     protected final List<ConfigFileChild> children = new ArrayList<>();
+    protected final Map<String, String> migrator = new HashMap<>();
     protected SaveStatus saveStatus = SaveStatus.UNSAVED;
     protected LoadStatus loadStatus = LoadStatus.UNLOADED;
 
-    public ConfigFile(SimpleIdentifier identifier) {
+    public ConfigFile(@NonNull SimpleIdentifier identifier) {
         this.identifier = identifier;
-        CONFIG_FILES.put(identifier, this);
+        if (CONFIG_FILES.put(identifier, this) != null) {
+            throw new IllegalStateException("Duplicated config identifier: " + identifier);
+        }
     }
 
     public ConfigFile(Identifier identifier) {
@@ -36,6 +36,14 @@ public abstract class ConfigFile implements ConfigSerializable {
 
     public ConfigFile(String namespace, String name) {
         this(new SimpleIdentifier(namespace, name));
+    }
+
+    public void migrateField(String oldField, String newField) {
+        migrator.put(oldField, newField);
+    }
+
+    public void migrateField(String oldField, ConfigField<?> newField) {
+        migrateField(oldField, newField.getName());
     }
 
     public void add(ConfigFileChild field, ConfigFileChild... fields) {
@@ -54,30 +62,30 @@ public abstract class ConfigFile implements ConfigSerializable {
     }
 
     public Path getDestination() {
-        return FileJsonUtils.getConfigPath().resolve(identifier.namespace()).resolve(getName() + ".json");
+        return toConfigPath(identifier);
     }
 
     @Override
-    public JsonElement serialize(JsonSerializationContext context) {
+    public JsonElement serialize() {
         JsonObject serialized = new JsonObject();
 
         for (ConfigFileChild field : children) {
-            serialized.add(field.getName(), field.serialize(context));
+            serialized.add(field.getName(), field.serialize());
         }
 
-        serialized.add("identity", ConfigCodecs.SIMPLE_IDENTIFIER.encode(identifier, context));
+        serialized.add("identity", ConfigCodecs.SIMPLE_IDENTIFIER.encode(identifier));
         return serialized;
     }
 
     @Override
-    public void deserialize(JsonElement jsonElement, JsonDeserializationContext context) {
+    public void deserialize(JsonElement jsonElement) {
         JsonObject serialized = jsonElement.getAsJsonObject();
 
         for (ConfigFileChild field : children) {
             String name = field.getName();
 
-            if (serialized.has(name)) {
-                field.deserialize(serialized.get(name), context);
+            if (serialized.has(name) || migrator.containsValue(field.getName())) {
+                field.deserialize(serialized.get(name));
             }
         }
 
@@ -96,16 +104,34 @@ public abstract class ConfigFile implements ConfigSerializable {
         }
     }
 
-    public boolean delete() {
-        if (FileJsonUtils.delete(getDestination())) {
-            saveStatus = SaveStatus.UNSAVED;
-            loadStatus = LoadStatus.UNLOADED;
-            return remove(identifier) != null;
+    public boolean migrate(SimpleIdentifier target) throws IllegalStateException {
+        if (identifier.equals(target)) return true;
+
+        if (canMigrate(target)) {
+            SimpleIdentifier oldIdentifier = identifier;
+
+            Path oldDestination = getDestination();
+            Path newDestination = toConfigPath(target);
+            if (!FileJsonUtils.move(oldDestination, newDestination)) return false;
+
+            this.identifier = target;
+            CONFIG_FILES.remove(oldIdentifier);
+            CONFIG_FILES.put(target, this);
+        } else {
+            throw new IllegalStateException("Cannot migrate to " + target + " as it already exists!");
         }
 
         return false;
     }
 
+    public boolean delete() {
+        if (FileJsonUtils.delete(getDestination())) {
+            saveStatus = SaveStatus.UNSAVED;
+            return remove(identifier) != null;
+        }
+
+        return false;
+    }
 
     public static Map<SimpleIdentifier, ConfigFile> getConfigFiles() {
         return CONFIG_FILES;
@@ -117,6 +143,14 @@ public abstract class ConfigFile implements ConfigSerializable {
 
     public static boolean isConfigFile(Object object) {
         return object instanceof ConfigFile;
+    }
+
+    public static boolean canMigrate(SimpleIdentifier migrateTo) {
+        return !CONFIG_FILES.containsKey(migrateTo);
+    }
+
+    public static Path toConfigPath(SimpleIdentifier identifier) {
+        return FileJsonUtils.getConfigPath().resolve(identifier.namespace()).resolve(identifier.path());
     }
 
     public enum SaveStatus {

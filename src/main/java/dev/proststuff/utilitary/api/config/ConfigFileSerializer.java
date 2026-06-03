@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ConfigFileSerializer implements JsonSerializer<ConfigFile>, JsonDeserializer<ConfigFile> {
     @Override
     public JsonElement serialize(ConfigFile src, Type typeOfSrc, JsonSerializationContext context) {
-        return src.serialize(context);
+        return src.serialize();
     }
 
     @Override
@@ -24,7 +24,7 @@ public class ConfigFileSerializer implements JsonSerializer<ConfigFile>, JsonDes
                 jsonObject.remove("identity");
 
                 ConfigFile.getConfigFiles().computeIfPresent(identifier, (_, configFile) -> {
-                    configFile.deserialize(json, context);
+                    configFile.deserialize(json);
                     atomicConfigFile.set(configFile);
                     return configFile;
                 });

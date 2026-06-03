@@ -1,7 +1,8 @@
 package dev.proststuff.utilitary.api.config.codec;
 
-import com.google.gson.*;
-import dev.proststuff.utilitary.Utilitary;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -10,40 +11,39 @@ import java.util.List;
 import java.util.Map;
 
 public record ConfigCodec<V>(Encoder<V> encoder, Decoder<V> decoder) {
-    public JsonElement encode(V value, JsonSerializationContext context) {
-        return encoder.encode(value, context);
+    public JsonElement encode(V value) {
+        return encoder.encode(value);
     }
 
-    public V decode(JsonElement json, JsonDeserializationContext context) {
-        return decoder.decode(json, context);
+    public V decode(JsonElement json) {
+        return decoder.decode(json);
     }
 
     public interface Encoder<V> {
-        JsonElement encode(@NonNull V value, JsonSerializationContext context);
+        JsonElement encode(@NonNull V value);
     }
 
     public interface Decoder<V> {
-        @Nullable V decode(JsonElement jsonElement, JsonDeserializationContext context);
+        @Nullable V decode(JsonElement jsonElement);
     }
-
 
     public static <V> ConfigCodec<List<V>> listOf(ConfigCodec<V> codec) {
         return new ConfigCodec<>(
-                (list, context) -> {
+                (list) -> {
                     JsonArray array = new JsonArray();
                     for (V v : list) {
-                        array.add(codec.encode(v, context));
+                        array.add(codec.encode(v));
                     }
                     return array;
                 },
 
-                (jsonElement, context) -> {
+                (jsonElement) -> {
                     if (jsonElement.isJsonArray()) {
                         JsonArray array = jsonElement.getAsJsonArray();
                         List<V> list = new ArrayList<>();
 
                         for (JsonElement element : array) {
-                            list.add(codec.decode(element, context));
+                            list.add(codec.decode(element));
                         }
 
                         return list;
@@ -56,25 +56,24 @@ public record ConfigCodec<V>(Encoder<V> encoder, Decoder<V> decoder) {
 
     public static <V> ConfigCodec<Map<String, V>> mapOf(ConfigCodec<V> valueCodec, Map<String, V> map) {
         return new ConfigCodec<>(
-                (_, context) -> {
+                (_) -> {
                     JsonObject object = new JsonObject();
 
                     for (Map.Entry<String, V> entry : map.entrySet()) {
-                        object.add(entry.getKey(), valueCodec.encode(entry.getValue(), context));
+                        object.add(entry.getKey(), valueCodec.encode(entry.getValue()));
                     }
 
                     return object;
                 },
-                (jsonElement, context) -> {
+                (jsonElement) -> {
                     if (jsonElement.isJsonObject()) {
                         map.clear();
                         JsonObject object = jsonElement.getAsJsonObject();
 
                         for (Map.Entry<String, JsonElement> entry : object.asMap().entrySet()) {
-                            V decoded = valueCodec.decode(entry.getValue(), context);
+                            V decoded = valueCodec.decode(entry.getValue());
 
                             if (decoded != null) {
-                                Utilitary.LOGGER.info("{}", decoded);
                                 map.put(entry.getKey(), decoded);
 
                             }

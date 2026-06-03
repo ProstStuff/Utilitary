@@ -1,11 +1,20 @@
 # Utilitary
 A utilitarian utility library.
 
+---
+
+## About
+Utilitary is a library mainly adds simple utilities and configuration.
+
+---
+
 ## Features
-- Config (in JSON format)
-  - Cover a lot of Java objects
-  - Use custom codecs for maximum serialization (and to make a custom config field!)
-- Color utility class
+### Config
+- Serialized as JSON file
+- Usage of custom codecs for maximum serialization
+- 
+
+---
 
 ## Contribution
-The library is not accepting any contributors as of now.
+Utilitary is not accepting any contributors as of now.
