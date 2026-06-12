@@ -54,6 +54,10 @@ public abstract class ConfigField<V> implements ConfigFileChild {
         if (this.value == null) {
             setDefault();
         }
+
+        if (configFile != null) {
+            configFile.markDirty();
+        }
     }
 
     public V validate(V value) {

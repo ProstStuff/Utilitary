@@ -50,10 +50,12 @@ public abstract class ConfigFile implements ConfigSerializable {
         if (isConfigFile(field)) throw new IllegalArgumentException("ConfigFile cannot add a ConfigFile class as their children!");
 
         children.add(field);
+        field.setConfigFile(this);
 
         for (ConfigFileChild configField : fields) {
             if (isConfigFile(configField)) throw new IllegalArgumentException("ConfigFile cannot add a ConfigFile class as their children!");
             children.add(configField);
+            configField.setConfigFile(this);
         }
     }
 
@@ -61,8 +63,8 @@ public abstract class ConfigFile implements ConfigSerializable {
         return identifier.path();
     }
 
-    public Path getDestination() {
-        return toConfigPath(identifier);
+    public Path getFilePath() {
+        return toFilePath(identifier);
     }
 
     @Override
@@ -92,15 +94,19 @@ public abstract class ConfigFile implements ConfigSerializable {
         this.loadStatus = LoadStatus.DESERIALIZATION_LOADED;
     }
 
+    public void markDirty() {
+        saveStatus = SaveStatus.UNSAVED;
+    }
+
     public void save() {
-        if (FileJsonUtils.write(getDestination(), this, ConfigFile.class)) {
-            this.saveStatus = SaveStatus.SAVED;
+        if (saveStatus != SaveStatus.SAVED && FileJsonUtils.write(getFilePath(), this, ConfigFile.class)) {
+            saveStatus = SaveStatus.SAVED;
         }
     }
 
     public void load() {
-        if (FileJsonUtils.read(getDestination(), ConfigFile.class, () -> null) != null) {
-            this.loadStatus = LoadStatus.DISK_LOADED;
+        if (FileJsonUtils.read(getFilePath(), ConfigFile.class, () -> null) != null) {
+            loadStatus = LoadStatus.DISK_LOADED;
         }
     }
 
@@ -110,11 +116,11 @@ public abstract class ConfigFile implements ConfigSerializable {
         if (canMigrate(target)) {
             SimpleIdentifier oldIdentifier = identifier;
 
-            Path oldDestination = getDestination();
-            Path newDestination = toConfigPath(target);
+            Path oldDestination = getFilePath();
+            Path newDestination = toFilePath(target);
             if (!FileJsonUtils.move(oldDestination, newDestination)) return false;
 
-            this.identifier = target;
+            identifier = target;
             CONFIG_FILES.remove(oldIdentifier);
             CONFIG_FILES.put(target, this);
         } else {
@@ -125,7 +131,7 @@ public abstract class ConfigFile implements ConfigSerializable {
     }
 
     public boolean delete() {
-        if (FileJsonUtils.delete(getDestination())) {
+        if (FileJsonUtils.delete(getFilePath())) {
             saveStatus = SaveStatus.UNSAVED;
             return remove(identifier) != null;
         }
@@ -149,8 +155,8 @@ public abstract class ConfigFile implements ConfigSerializable {
         return !CONFIG_FILES.containsKey(migrateTo);
     }
 
-    public static Path toConfigPath(SimpleIdentifier identifier) {
-        return FileJsonUtils.getConfigPath().resolve(identifier.namespace()).resolve(identifier.path());
+    public static Path toFilePath(SimpleIdentifier identifier) {
+        return FileJsonUtils.getConfigPath().resolve(identifier.namespace()).resolve(identifier.path() + ".json");
     }
 
     public enum SaveStatus {

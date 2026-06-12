@@ -32,48 +32,46 @@ public class FileJsonUtils {
         return FabricLoader.getInstance().getConfigDir();
     }
 
-    public static boolean createDirectories(Path destination) {
+    public static void createDirectories(Path destination) {
         if (!Files.exists(destination.getParent())) {
             try {
                 Files.createDirectories(destination.getParent());
-                return true;
             } catch (IOException e) {
                 LOGGER.error("Unable to create directory {}", destination.getParent());
             }
         }
 
-        return false;
     }
 
-    public static <T> boolean write(Path destination, T data, Class<T> clazz) {
-        createDirectories(destination);
+    public static <T> boolean write(Path filePath, T data, Class<T> clazz) {
+        createDirectories(filePath.getParent());
 
-        try (Writer writer = new FileWriter(destination.toFile())) {
+        try (Writer writer = new FileWriter(filePath.toFile())) {
             GSON.toJson(data, clazz, writer);
-            if (Utilitary.isDevelopmentEnvironment()) LOGGER.info("Successfully written {}", destination.getFileName());
+            if (Utilitary.isDevelopmentEnvironment()) LOGGER.info("Successfully written {}", filePath.getFileName());
             return true;
         } catch (IOException e) {
-            LOGGER.error("Unable to write {}", destination.getFileName(), e);
+            LOGGER.error("Unable to write {}", filePath.getFileName(), e);
         }
 
         return false;
     }
 
-    public static <T> T read(Path destination, Class<T> clazz, Supplier<T> fallback) {
-        if (!Files.exists(destination)) return fallback.get();
+    public static <T> T read(Path filePath, Class<T> clazz, Supplier<T> fallback) {
+        if (!Files.exists(filePath)) return fallback.get();
 
-        try (Reader reader = new FileReader(destination.toFile())) {
+        try (Reader reader = new FileReader(filePath.toFile())) {
             T obj = GSON.fromJson(reader, clazz);
 
             if (obj != null) {
-                if (Utilitary.isDevelopmentEnvironment()) LOGGER.info("Successfully read {}", destination.getFileName());
+                if (Utilitary.isDevelopmentEnvironment()) LOGGER.info("Successfully read {}", filePath.getFileName());
                 return obj;
             } else {
-                LOGGER.warn("Unable to deserialize {}", destination.getFileName());
+                LOGGER.warn("Unable to deserialize {}", filePath.getFileName());
                 return fallback.get();
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to read {}", destination.getFileName(), e);
+            LOGGER.error("Failed to read {}", filePath.getFileName(), e);
             return fallback.get();
         }
     }
