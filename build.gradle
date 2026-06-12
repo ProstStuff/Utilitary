@@ -9,6 +9,10 @@ group = project.maven_group
 repositories {
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/utilitary.classtweaker")
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	

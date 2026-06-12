@@ -10,7 +10,7 @@
 		"sources": "https://github.com/ProstStuff/Utilitary",
 		"issues": "https://github.com/ProstStuff/Utilitary/issues"
 	},
-	"license": "All Rights Reserved",
+	"license": "MIT",
 	"icon": "assets/utilitary/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -23,10 +23,12 @@
 		"fabric-api": "*"
 	},
 
+	"mixins": ["utilitary.mixin.json"],
+	"accessWidener": "utilitary.classtweaker",
+
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.discord": "https://discord.gg/u6ENkVyyd4",
 				"modmenu.modrinth": "https://modrinth.com/mod/utilitary",
 				"modmenu.youtube": "https://www.youtube.com/@ProstStuff"
 			},

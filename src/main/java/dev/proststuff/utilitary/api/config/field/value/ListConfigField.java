@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListConfigField<V> extends ConfigField<List<V>> {
-    public ListConfigField(String name, List<V> values, ConfigCodec<V> valueCodec) {
-        super(name, ImmutableList.copyOf(values), ConfigCodec.listOf(valueCodec));
+    public ListConfigField(String name, List<V> values, ConfigCodec<V> valueCodec, boolean immutable) {
+        super(name, ImmutableList.copyOf(values), ConfigCodec.listOf(valueCodec, immutable));
         this.value = new ArrayList<>();
         this.value.addAll(values);
+    }
+
+    public ListConfigField(String name, List<V> values, ConfigCodec<V> valueCodec) {
+        super(name, ImmutableList.copyOf(values), ConfigCodec.listOf(valueCodec, false));
     }
 
     public boolean add(V value) {

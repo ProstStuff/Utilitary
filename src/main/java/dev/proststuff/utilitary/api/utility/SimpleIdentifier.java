@@ -1,11 +1,20 @@
 package dev.proststuff.utilitary.api.utility;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.IdentifierException;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
 public record SimpleIdentifier(String namespace, String path) implements Comparable<SimpleIdentifier> {
+    public static final Codec<SimpleIdentifier> CODEC = Codec.STRING.comapFlatMap(SimpleIdentifier::read, SimpleIdentifier::toString).stable();
+    public static final StreamCodec<ByteBuf, Identifier> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(Identifier::parse, Identifier::toString);
+
     public static SimpleIdentifier of(String namespace, String path) {
         return new SimpleIdentifier(namespace, path);
     }
@@ -21,7 +30,7 @@ public record SimpleIdentifier(String namespace, String path) implements Compara
     public static SimpleIdentifier parse(String identifier) throws IllegalArgumentException {
         int i = identifier.indexOf(':');
         if (i == -1) {
-            throw new IllegalArgumentException("Invalid identifier '" + identifier + "', no ':' to separate between namespace and path.");
+            throw new IllegalArgumentException("Invalid simple identifier '" + identifier + "', no ':' to separate between namespace and path.");
         }
 
         return new SimpleIdentifier(identifier.substring(0, i), identifier.substring(i + 1));
@@ -80,5 +89,13 @@ public record SimpleIdentifier(String namespace, String path) implements Compara
         }
 
         return result;
+    }
+
+    public static DataResult<SimpleIdentifier> read(final String input) {
+        try {
+            return DataResult.success(parse(input));
+        } catch (IdentifierException e) {
+            return DataResult.error(() -> "Not a valid resource location: " + input + " " + e.getMessage());
+        }
     }
 }

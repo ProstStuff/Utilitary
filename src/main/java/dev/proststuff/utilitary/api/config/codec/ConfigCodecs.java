@@ -6,9 +6,8 @@ import dev.proststuff.utilitary.api.utility.Color;
 import dev.proststuff.utilitary.api.utility.SimpleIdentifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 public class ConfigCodecs {
     public static final ConfigCodec<String> STRING = new ConfigCodec<>(
@@ -136,54 +135,35 @@ public class ConfigCodecs {
             }
     );
 
-    public static final ConfigCodec<Vector3i> VECTOR3I = new ConfigCodec<>(
+    public static final ConfigCodec<Vec3> VEC3 = new ConfigCodec<>(
             (value) -> {
-                JsonArray array = new JsonArray();
-                array.add(value.x());
-                array.add(value.y());
-                array.add(value.z());
+                JsonArray array = new JsonArray(3);
+                array.add(value.x);
+                array.add(value.y);
+                array.add(value.z);
                 return array;
             },
             (jsonElement) -> {
                 if (jsonElement.isJsonArray()) {
                     JsonArray array = jsonElement.getAsJsonArray();
-                    return new Vector3i(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt());
+                    return new Vec3(array.get(0).getAsDouble(), array.get(1).getAsDouble(), array.get(2).getAsDouble());
                 }
 
                 return null;
             }
     );
 
-    public static final ConfigCodec<Vector3f> VECTOR3F = new ConfigCodec<>(
+    public static final ConfigCodec<Vec2> VEC2 = new ConfigCodec<>(
             (value) -> {
-                JsonArray array = new JsonArray();
-                array.add(value.x());
-                array.add(value.y());
-                array.add(value.z());
+                JsonArray array = new JsonArray(2);
+                array.add(value.x);
+                array.add(value.y);
                 return array;
             },
             (jsonElement) -> {
                 if (jsonElement.isJsonArray()) {
                     JsonArray array = jsonElement.getAsJsonArray();
-                    return new Vector3f(array.get(0).getAsFloat(), array.get(1).getAsFloat(), array.get(2).getAsFloat());
-                }
-
-                return null;
-            }
-    );
-
-    public static final ConfigCodec<Vector3d> VECTOR3D = new ConfigCodec<>(
-            (value) -> {
-                JsonArray array = new JsonArray();
-                array.add(value.x());
-                array.add(value.y());
-                array.add(value.z());
-                return array;
-            },
-            (jsonElement) -> {
-                if (jsonElement.isJsonArray()) {
-                    JsonArray array = jsonElement.getAsJsonArray();
-                    return new Vector3d(array.get(0).getAsDouble(), array.get(1).getAsDouble(), array.get(2).getAsDouble());
+                    return new Vec2(array.get(0).getAsFloat(), array.get(1).getAsFloat());
                 }
 
                 return null;

@@ -1,5 +1,6 @@
 package dev.proststuff.utilitary.api.config.codec;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -27,7 +28,7 @@ public record ConfigCodec<V>(Encoder<V> encoder, Decoder<V> decoder) {
         @Nullable V decode(JsonElement jsonElement);
     }
 
-    public static <V> ConfigCodec<List<V>> listOf(ConfigCodec<V> codec) {
+    public static <V> ConfigCodec<List<V>> listOf(ConfigCodec<V> codec, boolean immutable) {
         return new ConfigCodec<>(
                 (list) -> {
                     JsonArray array = new JsonArray();
@@ -46,7 +47,7 @@ public record ConfigCodec<V>(Encoder<V> encoder, Decoder<V> decoder) {
                             list.add(codec.decode(element));
                         }
 
-                        return list;
+                        return immutable ? ImmutableList.copyOf(list) : list;
                     }
 
                     return null;
