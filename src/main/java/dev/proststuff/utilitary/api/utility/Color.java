@@ -1,130 +1,101 @@
 package dev.proststuff.utilitary.api.utility;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import dev.proststuff.utilitary.api.impl.ColorRGB;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ARGB;
 
-public class Color {
-    protected int hex;
+@SuppressWarnings("unused")
+public class Color implements ColorRGB {
+    public static final Codec<Color> CODEC = Codec.STRING.comapFlatMap(Color::read, Color::toString);
+    public static final StreamCodec<ByteBuf, Color> STREAM_CODEC = ByteBufCodecs.INT.map(Color::new, Color::asInt);
 
-    public Color(int hex) {
-        this.hex = hex;
+    protected int red;
+    protected int green;
+    protected int blue;
+    protected int color;
+
+    public Color(int red, int green, int blue) {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        refresh();
     }
 
-    public Color(float a, float r, float g, float b) {
-        this(ARGB.colorFromFloat(a, r, g, b));
+    public Color(int color) {
+        this(ARGB.red(color), ARGB.green(color), ARGB.blue(color));
     }
 
-    public Color(float r, float g, float b) {
-        this(1.0F, r, g, b);
+    public Color(String hex) {
+        this(Integer.parseInt(hex, 16));
     }
 
-    public Color(int r, int g, int b) {
-        this(r / 255.0F, g / 255.0F, b / 255.0F);
+    public ColorWithAlpha withAlpha(int alpha) {
+        if (this instanceof ColorWithAlpha) return (ColorWithAlpha) this;
+        return new ColorWithAlpha(alpha, this.red, this.green, this.blue);
     }
 
-    public Color(int a, int r, int g, int b) {
-        this(a / 255.0F, r / 255.0F, g / 255.0F, b / 255.0F);
+    public ColorWithAlpha withAlpha() {
+        return withAlpha(255);
     }
 
     public int get() {
-        return hex;
+        return color;
     }
 
-    public int get(float alpha, float brightness) {
-        return ARGB.setBrightness(ARGB.color(alpha, get()), brightness);
+    public void refresh() {
+        this.color = asInt();
     }
 
-    public int get(float alpha) {
-        return withAlpha(alpha);
+    @Override
+    public int red() {
+        return red;
     }
 
-    public int get(int alpha) {
-        return get(alpha / 255.0F);
+    @Override
+    public int green() {
+        return green;
     }
 
-    public int withAlpha(float alpha) {
-        return ARGB.color(alpha, get());
+    @Override
+    public int blue() {
+        return blue;
     }
 
-    public int withBrightness(float brightness) {
-        return ARGB.setBrightness(get(), brightness);
+    @Override
+    public void setRed(int red) {
+        this.red = red;
+        refresh();
     }
 
-    public int getAlpha() {
-        return ARGB.alpha(get());
+    @Override
+    public void setGreen(int green) {
+        this.green = green;
+        refresh();
     }
 
-    public int getRed() {
-        return ARGB.red(get());
+    @Override
+    public void setBlue(int blue) {
+        this.blue = blue;
+        refresh();
     }
 
-    public int getGreen() {
-        return ARGB.green(get());
-    }
-
-    public int getBlue() {
-        return ARGB.blue(get());
-    }
-
-    public int set(int color) {
-        this.hex = color;
-        return this.hex;
-    }
-
-    public int set(float a, float r, float g, float b) {
-        return set(ARGB.colorFromFloat(a, r, g, b));
-    }
-
-    public int set(float r, float g, float b) {
-        return set(1.0F, r, g, b);
-    }
-
-    public int set(int r, int g, int b) {
-        return set(r / 255.0F, g / 255.0F, b / 255.0F);
-    }
-
-    public int set(int a, int r, int g, int b) {
-        return set(a / 255.0F, r / 255.0F, g / 255.0F, b / 255.0F);
-    }
-
-    public int setAlpha(float alpha) {
-        this.hex = ARGB.color(alpha, hex);
-        return this.hex;
-    }
-
-    public int setAlpha(int alpha) {
-        this.hex = ARGB.color(alpha, hex);
-        return this.hex;
-    }
-
-    public int setRed(int r) {
-        this.hex = ARGB.color(getAlpha(),r, getGreen(), getBlue());
-        return this.hex;
-    }
-
-    public int setRed(float r) {
-        return setRed((int) r * 255);
-    }
-
-    public int setGreen(int g) {
-        this.hex = ARGB.color(getAlpha(), getRed(), g, getBlue());
-        return this.hex;
-    }
-
-    public int setGreen(float g) {
-        return setGreen((int) g * 255);
-    }
-
-    public int setBlue(int b) {
-        this.hex = ARGB.color(getAlpha(), getRed(), b, getBlue());
-        return this.hex;
-    }
-
-    public int setBlue(float b) {
-        return setBlue((int) b * 255);
+    public static DataResult<Color> read(final String input) {
+        return DataResult.success(new Color(input));
     }
 
     @Override
     public String toString() {
-        return String.format("%08X", get());
+        return asString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof ColorRGB colorRGB && (colorRGB.asInt() == this.asInt() || colorRGB.asString().equals(this.asString()))) return true;
+        return super.equals(obj);
     }
 }

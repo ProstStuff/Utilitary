@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public record SimpleIdentifier(String namespace, String path) implements Comparable<SimpleIdentifier> {
     public static final Codec<SimpleIdentifier> CODEC = Codec.STRING.comapFlatMap(SimpleIdentifier::read, SimpleIdentifier::toString).stable();
-    public static final StreamCodec<ByteBuf, Identifier> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(Identifier::parse, Identifier::toString);
+    public static final StreamCodec<ByteBuf, SimpleIdentifier> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(SimpleIdentifier::parse, SimpleIdentifier::toString);
 
     public static SimpleIdentifier of(String namespace, String path) {
         return new SimpleIdentifier(namespace, path);
