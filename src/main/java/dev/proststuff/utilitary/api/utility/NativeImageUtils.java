@@ -2,47 +2,59 @@ package dev.proststuff.utilitary.api.utility;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.proststuff.utilitary.Utilitary;
-import net.fabricmc.loader.api.FabricLoader;
+import io.netty.util.internal.UnstableApi;
+import org.jspecify.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class NativeImageUtils {
-    public static NativeImage read(File file) {
+@UnstableApi
+public interface NativeImageUtils {
+    static NativeImage read(File file) {
         try (InputStream stream = Files.newInputStream(file.toPath())) {
             return NativeImage.read(stream);
         } catch (Exception e) {
-            Utilitary.LOGGER.error("Failed to read image file", e);
+            Utilitary.LOGGER.error("[UTILITARY IMAGE] Failed to read image file", e);
         }
 
         return null;
     }
 
-    public static NativeImage fromBytes(byte[] data) {
-        try (ByteArrayInputStream stream = new ByteArrayInputStream(data)) {
-            return NativeImage.read(stream);
-        } catch (Exception e) {
-            Utilitary.LOGGER.error("Failed to decode NativeImage", e);
-        }
-
-        return null;
+    static NativeImage fromBytes(byte[] data) throws IOException {
+        if (Utilitary.CONFIG.debugPrinting()) Utilitary.LOGGER.info("Decoding bytes to image");
+        return NativeImage.read(new ByteArrayInputStream(data));
     }
 
-    public static byte[] toBytes(NativeImage image) {
+    static byte @Nullable [] toBytes(NativeImage image) {
+        if (Utilitary.CONFIG.debugPrinting()) Utilitary.LOGGER.info("Encoding {} NativeImage ({}, {})", image, image.getWidth(), image.getHeight());
+
+        Path temp;
+        byte[] bytes = null;
+
         try {
-            Path temp = Files.createTempFile("native_image", ".png");
-            image.writeToFile(temp);
-            byte[] data = Files.readAllBytes(temp);
-            Files.deleteIfExists(temp);
-            if (FabricLoader.getInstance().isDevelopmentEnvironment()) Utilitary.LOGGER.info("Successfully read {}", image);
-            return data;
-        } catch (Exception e) {
-            Utilitary.LOGGER.error("Failed to encode NativeImage", e);
+            temp = Files.createTempFile("native_image_temp", ".png");
+        } catch (IOException e) {
+            Utilitary.LOGGER.error("[UTILITARY IMAGE] Unable to create a temp file to encode NativeImage", e);
+            return null;
         }
 
-        return new byte[0];
+        try {
+            image.writeToFile(temp);
+            bytes = Files.readAllBytes(temp);
+        } catch (IOException e) {
+            Utilitary.LOGGER.error("[UTILITARY IMAGE] Failed to encode NativeImage", e);
+        }
+
+        try {
+            Files.deleteIfExists(temp);
+        } catch (IOException e) {
+            Utilitary.LOGGER.error("[UTILITARY IMAGE] Failed to delete a temp file", e);
+        }
+
+        return bytes;
     }
 }

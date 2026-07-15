@@ -1,6 +1,6 @@
 package dev.proststuff.utilitary.mixin;
 
-import dev.proststuff.utilitary.api.impl.UUIDRenderStateHolder;
+import dev.proststuff.utilitary.api.client.entity.UUIDRenderStateHolder;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,11 +13,7 @@ public class RenderStateUUIDHolder implements UUIDRenderStateHolder {
 
     @Override
     public void utilitary$setUUID(UUID uuid) {
-        if (utilitary$uuid == null && uuid != null) {
-            this.utilitary$uuid = uuid;
-        } else {
-            throw new IllegalStateException("UUID can only be set once and not a null");
-        }
+        this.utilitary$uuid = uuid;
     }
 
     @Override

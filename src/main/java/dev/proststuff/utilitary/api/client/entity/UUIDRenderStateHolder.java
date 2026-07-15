@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.impl;
+package dev.proststuff.utilitary.api.client.entity;
 
 import java.util.UUID;
 

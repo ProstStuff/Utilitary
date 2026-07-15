@@ -14,7 +14,9 @@
 	"icon": "assets/utilitary/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.proststuff.utilitary.Utilitary"]
+		"main": ["dev.proststuff.utilitary.Utilitary"],
+		"client": ["dev.proststuff.utilitary.UtilitaryClient"],
+		"modmenu": ["dev.proststuff.utilitary.client.compat.UtilitaryModMenu"]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.2",

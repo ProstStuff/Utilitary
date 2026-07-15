@@ -12,6 +12,7 @@
   },
   "client": [
     "RenderStateUUIDExtractor",
-    "RenderStateUUIDHolder"
+    "RenderStateUUIDHolder",
+    "ScreenMixin"
   ]
 }

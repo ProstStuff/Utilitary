@@ -1,62 +1,46 @@
 package dev.proststuff.utilitary.api.utility;
 
-import dev.proststuff.utilitary.Utilitary;
-
 import java.io.ByteArrayOutputStream;
-import java.security.MessageDigest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.List;
 
-public class FileUtils {
-    public static final int DEFAULT_CHUNK_SIZE = 32768;
+public interface FileUtils {
+    int DEFAULT_CHUNK_SIZE = 32768;
 
-    public static String sha256(byte[] data) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(data);
-            StringBuilder builder = new StringBuilder();
-            for (byte b : hash) builder.append(String.format("%02x", b));
-            return builder.toString();
-        } catch (Exception e) {
-            Utilitary.LOGGER.error("Failed to hash data", e);
-        }
-
-        return "";
+    static String sha256(byte[] data) {
+        return HexFormat.of().formatHex(data);
     }
 
-
-    public static List<byte[]> chunk(byte[] data) {
+    static List<byte[]> chunk(byte[] data, int chunkSize) {
         List<byte[]> chunks = new ArrayList<>();
 
-        for (int i = 0; i < data.length; i += DEFAULT_CHUNK_SIZE) {
-            int end = Math.min(data.length, i + DEFAULT_CHUNK_SIZE);
+        for (int i = 0; i < data.length; i += chunkSize) {
+            int end = Math.min(data.length, i + chunkSize);
             chunks.add(Arrays.copyOfRange(data, i, end));
         }
 
         return chunks;
     }
 
-    public static byte[] mergeChunks(List<byte[]> chunks) {
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            for (byte[] chunk : chunks) stream.write(chunk);
-            return stream.toByteArray();
-        } catch (Exception e) {
-            Utilitary.LOGGER.error("Failed to merge chunks", e);
-        }
-
-        return new byte[0];
+    static List<byte[]> chunk(byte[] data) {
+        return chunk(data, DEFAULT_CHUNK_SIZE);
     }
 
-    public static boolean exceedsMaxSize(byte[] data, int maxBytes) {
-        return data.length > maxBytes;
+    static byte[] mergeChunks(List<byte[]> chunks) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        for (byte[] chunk : chunks) stream.write(chunk);
+        return stream.toByteArray();
     }
 
-    public static int getChunkCount(byte[] data, int chunkSize) {
-        return (int) Math.ceil((double) data.length / chunkSize);
+    static int getChunkCount(byte[] data, int chunkSize) {
+        return (data.length + chunkSize - 1) / chunkSize;
     }
 
-    public static int getChunkCount(byte[] data) {
+    static int getChunkCount(byte[] data) {
         return getChunkCount(data, DEFAULT_CHUNK_SIZE);
     }
 }

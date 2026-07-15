@@ -1,6 +1,7 @@
 package dev.proststuff.utilitary.api.config;
 
 import com.google.gson.JsonElement;
+import dev.proststuff.utilitary.api.config.serialization.format.ConfigFormat;
 import dev.proststuff.utilitary.api.config.serialization.metadata.ConfigMetadata;
 import dev.proststuff.utilitary.api.config.serialization.metadata.ConfigMetadataType;
 import dev.proststuff.utilitary.api.utility.SimpleIdentifier;
@@ -11,24 +12,26 @@ import org.jspecify.annotations.Nullable;
 import java.util.NavigableMap;
 import java.util.function.Supplier;
 
-public record ConfigType<T, R extends ConfigMetadata, M extends ConfigMetadataType<R>>(
-        Identifier id, int version,
-        @NonNull ConfigCodec<T> codec,
-        @NonNull ConfigDefaults<T> defaults,
-        @Nullable NavigableMap<Integer, Migration> migrations,
-        M metadata
+public record ConfigType<C, M extends ConfigMetadata, F>(
+                Identifier id, int version,
+                @NonNull ConfigCodec<C> codec,
+                @NonNull ConfigDefaults<C> defaults,
+                @Nullable NavigableMap<Integer, Migration> migrations,
+                ConfigMetadataType<M> metadata,
+                @NonNull ConfigFormat<F> format
 ) {
-    public static <T, R extends ConfigMetadata, M extends ConfigMetadataType<R>> ConfigType<T, R, M> of(
+    public static <C, M extends ConfigMetadata, F> ConfigType<C, M, F> of(
             Identifier id, int version,
-            @NonNull ConfigCodec<T> codec,
-            @NonNull ConfigDefaults<T> defaults,
+            @NonNull ConfigCodec<C> codec,
+            @NonNull ConfigDefaults<C> defaults,
             Supplier<NavigableMap<Integer, Migration>> migrations,
-            M metadata
+            ConfigMetadataType<M> metadata,
+            ConfigFormat<F> fileCodec
     ) {
-        return new ConfigType<>(id, version, codec, defaults, migrations.get(), metadata);
+        return new ConfigType<>(id, version, codec, defaults, migrations.get(), metadata, fileCodec);
     }
 
-    public R toMetadata(T config) {
+    public M toMetadata(C config) {
         return metadata.create(new ConfigMetadataType.Context<>(id, version, config));
     }
 

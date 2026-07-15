@@ -76,6 +76,13 @@ public record SimpleIdentifier(String namespace, String path) implements Compara
         return Optional.of(Identifier.fromNamespaceAndPath(namespace, path));
     }
 
+    public Identifier asNormalizedIdentifier() {
+        return Identifier.fromNamespaceAndPath(
+                namespace().replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase(),
+                path().replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase()
+        );
+    }
+
     @Override
     public @NonNull String toString() {
         return namespace + ":" + path;
@@ -95,7 +102,7 @@ public record SimpleIdentifier(String namespace, String path) implements Compara
         try {
             return DataResult.success(parse(input));
         } catch (IdentifierException e) {
-            return DataResult.error(() -> "Not a valid resource location: " + input + " " + e.getMessage());
+            return DataResult.error(() -> "Not deltaTick valid resource location: " + input + " " + e.getMessage());
         }
     }
 }
