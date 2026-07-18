@@ -1,7 +1,7 @@
 package dev.proststuff.utilitary.mixin;
 
-import dev.proststuff.utilitary.api.v0.client.gui.ScreenAutoParentable;
-import dev.proststuff.utilitary.api.v0.client.gui.Tickable;
+import dev.proststuff.utilitary.api.v1.client.gui.ScreenAutoParentable;
+import dev.proststuff.utilitary.api.v1.client.gui.Tickable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;

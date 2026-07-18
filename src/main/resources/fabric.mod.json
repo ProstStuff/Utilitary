@@ -15,7 +15,6 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": ["dev.proststuff.utilitary.Utilitary"],
-		"client": ["dev.proststuff.utilitary.UtilitaryClient"],
 		"modmenu": ["dev.proststuff.utilitary.client.compat.UtilitaryModMenu"]
 	},
 	"depends": {
@@ -24,16 +23,14 @@
 		"java": ">=25",
 		"fabric-api": "*"
 	},
-
 	"mixins": ["utilitary.mixin.json"],
-
 	"custom": {
 		"modmenu": {
 			"links": {
 				"modmenu.modrinth": "https://modrinth.com/mod/utilitary",
 				"modmenu.youtube": "https://www.youtube.com/@ProstStuff"
 			},
-			"update_checker": false,
+			"update_checker": true,
 			"badges": [
 				"library"
 			]

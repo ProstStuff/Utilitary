@@ -1,6 +1,6 @@
 package dev.proststuff.utilitary.mixin;
 
-import dev.proststuff.utilitary.api.v0.client.entity.UUIDRenderStateHolder;
+import dev.proststuff.utilitary.api.v1.client.entity.UUIDRenderStateHolder;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.world.entity.Entity;
