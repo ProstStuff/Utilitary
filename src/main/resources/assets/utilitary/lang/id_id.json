@@ -1,0 +1,8 @@
+{
+  "utilitary.metadata.version": "Versi Internal Konfigurasi",
+  "utilitary.config": "Konfigurasi Utilitary",
+  "utilitary.config.debug_printing": "Pencatatan Log Debug",
+  "utilitary.config.debug_printing.info": "Buat Utilitary (dan beberapa mods yang mengunakan opsi ini) untuk tetap mengirim pesan debug [INFO] daripada tidak mengirimnya.",
+  "utilitary.config.safe_mode": "Mode Aman",
+  "utilitary.config.safe_mode.info": "Menonaktifkan fitur menyimpan dan memuat pada sistem konfigurasi Utilitary. Pemuatan konfigurasi seterusnya akan dibatalkan dan selalu mengembalikan konfigurasi semula."
+}

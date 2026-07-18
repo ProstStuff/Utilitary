@@ -26,7 +26,6 @@
 	},
 
 	"mixins": ["utilitary.mixin.json"],
-	"accessWidener": "utilitary.classtweaker",
 
 	"custom": {
 		"modmenu": {

@@ -1,4 +1,9 @@
 {
+  "utilitary.metadata.version": "Internal Config Version",
+
   "utilitary.config": "Utilitary Config",
-  "utilitary.resourcepacks.gui": "Utilitary default theme and styles"
+  "utilitary.config.debug_printing": "Debug Printing",
+  "utilitary.config.debug_printing.info": "Makes Utilitary (and some depended on mods that use this option) to send [INFO] debug message instead of not sending it.",
+  "utilitary.config.safe_mode": "Safe Mode",
+  "utilitary.config.safe_mode.info": "Disable saving and loading of Utilitary config system. The next config loading will be canceled and always return default."
 }

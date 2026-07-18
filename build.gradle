@@ -27,10 +27,6 @@ dependencies {
 	include("de.marhali:json5-java:${json5_version}")
 }
 
-loom {
-	accessWidenerPath = file("src/main/resources/utilitary.classtweaker")
-}
-
 processResources {
 	def version = project.version
 	inputs.property "version", version
