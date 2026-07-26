@@ -18,6 +18,8 @@ public interface Scrollable {
 
         void setX(int x);
         void setY(int y);
+        int getY();
+        int getX();
         int getWidth();
         int getHeight();
 
@@ -38,8 +40,8 @@ public interface Scrollable {
             boolean scrollVertically = containerScrollDirection.canScrollVertically() && elementScrollDirection.canScrollVertically();
             boolean scrollHorizontally = containerScrollDirection.canScrollHorizontally() && elementScrollDirection.canScrollHorizontally();
 
-            if (scrollVertically) setY((int) (getOriginY() + container.getScrollY()));
-            if (scrollHorizontally) setX((int) (getOriginX() + container.getScrollX()));
+            if (scrollVertically) setY((int) (getOriginY() - container.getScrollY()));
+            if (scrollHorizontally) setX((int) (getOriginX() - container.getScrollX()));
         }
     }
     
@@ -70,23 +72,35 @@ public interface Scrollable {
         }
 
         default int getContentHeight() {
-            int height = 0;
+            int lowestY = Integer.MAX_VALUE;
+            int highestY = Integer.MIN_VALUE;
 
             for (Element element : getScrollableElements()) {
-                height += element.getScrollableHeight();
+                lowestY = Math.min(lowestY, element.getOriginY());
+                highestY = Math.max(highestY, element.getOriginY() + element.getScrollableHeight());
             }
 
-            return height;
+            if (lowestY == Integer.MAX_VALUE) {
+                return 0;
+            }
+
+            return highestY - lowestY;
         }
 
         default int getContentWidth() {
-            int width = 0;
+            int lowestX = Integer.MAX_VALUE;
+            int highestX = Integer.MIN_VALUE;
 
             for (Element element : getScrollableElements()) {
-                width += element.getScrollableWidth();
+                lowestX = Math.min(lowestX, element.getOriginX());
+                highestX = Math.max(highestX, element.getOriginX() + element.getScrollableWidth());
             }
 
-            return width;
+            if (lowestX == Integer.MAX_VALUE) {
+                return 0;
+            }
+
+            return highestX - lowestX;
         }
 
         default double evaluateScrollY(double scrollY) {

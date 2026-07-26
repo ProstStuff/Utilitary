@@ -15,15 +15,11 @@ public class ColorRGB {
     public static final Codec<ColorRGB> CODEC = Codec.STRING.comapFlatMap(ColorRGB::read, ColorRGB::toString);
     public static final StreamCodec<ByteBuf, ColorRGB> STREAM_CODEC = ByteBufCodecs.INT.map(ColorRGB::new, ColorRGB::get);
 
-    public static final ColorRGB RED = new ColorRGB(255, 0, 0);
-    public static final ColorRGB GREEN = new ColorRGB(0, 255, 0);
-    public static final ColorRGB BLUE = new ColorRGB(0, 0, 255);
-    public static final ColorRGB WHITE = new ColorRGB(255, 255, 255);
-    public static final ColorRGB BLACK = new ColorRGB(0, 0, 0);
-
     protected int red;
     protected int green;
     protected int blue;
+
+    protected boolean immutable = false;
 
     public ColorRGB(int red, int green, int blue) {
         this.red = red;
@@ -43,8 +39,18 @@ public class ColorRGB {
         this(Integer.parseInt(hex, 16));
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends ColorRGB> T setImmutable() {
+        this.immutable = true;
+        return (T) this;
+    }
+
+    public boolean isImmutable() {
+        return immutable;
+    }
+
     public ColorRGB copy() {
-        return new ColorRGB(red, green, blue);
+        return new ColorRGB(red(), green(), blue());
     }
 
     public boolean hasAlpha() {
@@ -52,24 +58,24 @@ public class ColorRGB {
     }
 
     public ColorARGB withAlpha(int alpha) {
-        if (this instanceof ColorARGB colorWithAlpha && colorWithAlpha.alpha == alpha) return (ColorARGB) this;
-        return new ColorARGB(alpha, red, green, blue);
-    }
-
-    public ColorARGB withAlpha(float alpha) {
-        return withAlpha(floatToInt(alpha));
+        if (this instanceof ColorARGB colorWithAlpha && colorWithAlpha.alpha() == alpha && !isImmutable()) return (ColorARGB) this;
+        return new ColorARGB(alpha, red(), green(), blue());
     }
 
     public ColorARGB withAlpha() {
         return withAlpha(255);
     }
 
+    public ColorARGB withAlpha(float alpha) {
+        return withAlpha(floatToInt(alpha));
+    }
+
     public int get() {
-        return ARGB.color(red, green, blue);
+        return ARGB.color(red(), green(), blue());
     }
 
     public int get(int alpha) {
-        return ARGB.color(alpha, red, green, blue);
+        return ARGB.color(alpha, red(), green(), blue());
     }
 
     public int get(float alpha) {
@@ -89,6 +95,7 @@ public class ColorRGB {
     }
 
     public void setRed(int red) {
+        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
         this.red = red;
     }
 
@@ -97,6 +104,7 @@ public class ColorRGB {
     }
 
     public void setGreen(int green) {
+        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
         this.green = green;
     }
 
@@ -105,6 +113,7 @@ public class ColorRGB {
     }
 
     public void setBlue(int blue) {
+        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
         this.blue = blue;
     }
 
@@ -116,6 +125,14 @@ public class ColorRGB {
         setRed(red);
         setGreen(green);
         setBlue(blue);
+    }
+
+    public void set(float red, float green, float blue) {
+        set(floatToInt(red), floatToInt(green), floatToInt(blue));
+    }
+
+    public void set(int color) {
+        set(ARGB.red(color), ARGB.green(color), ARGB.blue(color));
     }
 
     @Override

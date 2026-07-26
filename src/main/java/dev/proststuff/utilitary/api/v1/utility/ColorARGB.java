@@ -21,7 +21,7 @@ public class ColorARGB extends ColorRGB {
     }
 
     public ColorARGB(float alpha, float red, float green, float blue) {
-        this(floatToInt(alpha * 255), floatToInt(red * 255), floatToInt(green * 255), floatToInt(blue * 255));
+        this(floatToInt(alpha), floatToInt(red), floatToInt(green), floatToInt(blue));
     }
 
     public ColorARGB(int color) {
@@ -46,11 +46,28 @@ public class ColorARGB extends ColorRGB {
     }
 
     public void setAlpha(int alpha) {
+        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
         this.alpha = alpha;
     }
 
     public void setAlpha(float alpha) {
         setAlpha(floatToInt(alpha));
+    }
+
+    public void set(int alpha, int red, int green, int blue) {
+        super.set(red, green, blue);
+        setAlpha(alpha);
+    }
+
+    public void set(float alpha, float red, float green, float blue) {
+        super.set(red, green, blue);
+        setAlpha(alpha);
+    }
+
+    @Override
+    public void set(int color) {
+        super.set(color);
+        setAlpha(ARGB.alpha(color));
     }
 
     @Override
