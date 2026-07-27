@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.v1.utility;
+package dev.proststuff.utilitary.api.v1.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -45,8 +45,12 @@ public class ColorARGB extends ColorRGB {
         return alpha;
     }
 
+    public float alphaFloat() {
+        return alpha / 255.0F;
+    }
+
     public void setAlpha(int alpha) {
-        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
+        if (isImmutable()) throw new IllegalStateException("ColorRGB is set as immutable");
         this.alpha = alpha;
     }
 

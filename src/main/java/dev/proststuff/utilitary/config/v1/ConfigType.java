@@ -1,7 +1,7 @@
 package dev.proststuff.utilitary.config.v1;
 
 import com.google.gson.JsonElement;
-import dev.proststuff.utilitary.api.v1.utility.SimpleIdentifier;
+import dev.proststuff.utilitary.api.v1.util.SimpleIdentifier;
 import dev.proststuff.utilitary.config.v1.serialization.Comment;
 import dev.proststuff.utilitary.config.v1.serialization.format.ConfigFormat;
 import dev.proststuff.utilitary.config.v1.serialization.metadata.ConfigMetadata;

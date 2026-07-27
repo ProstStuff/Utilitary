@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.v1.utility;
+package dev.proststuff.utilitary.api.v1.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -86,16 +86,28 @@ public class ColorRGB {
         return red;
     }
 
+    public float redFloat() {
+        return red / 255.0F;
+    }
+
     public int green() {
         return green;
+    }
+
+    public float greenFloat() {
+        return green / 255.0F;
     }
 
     public int blue() {
         return blue;
     }
 
+    public float blueFloat() {
+        return blue / 255.0F;
+    }
+
     public void setRed(int red) {
-        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
+        if (isImmutable()) throw new IllegalStateException("ColorRGB is set as immutable");
         this.red = red;
     }
 
@@ -104,7 +116,7 @@ public class ColorRGB {
     }
 
     public void setGreen(int green) {
-        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
+        if (isImmutable()) throw new IllegalStateException("ColorRGB is set as immutable");
         this.green = green;
     }
 
@@ -113,7 +125,7 @@ public class ColorRGB {
     }
 
     public void setBlue(int blue) {
-        if (immutable) throw new IllegalStateException("ColorRGB is set as immutable");
+        if (isImmutable()) throw new IllegalStateException("ColorRGB is set as immutable");
         this.blue = blue;
     }
 
@@ -151,8 +163,7 @@ public class ColorRGB {
         input = input.strip();
         input = input.substring(Math.max(0, input.length() - 6));
         if (input.length() <= 6) input = String.format("%6s", input).replace(' ', 'F');
-
-        if (input.length() == 8) return DataResult.success(new ColorARGB(input));
+        if (ColorARGB.isARGB(input)) return DataResult.success(new ColorARGB(input));
         return DataResult.success(new ColorRGB(input));
     }
 

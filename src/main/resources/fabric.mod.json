@@ -3,7 +3,7 @@
 	"id": "utilitary",
 	"version": "${version}",
 	"name": "Utilitary",
-	"description": "A utilitarian utility library.",
+	"description": "A utilitarian utility library",
 	"authors": ["ProstStuff"],
 	"contact": {
 		"homepage": "https://modrinth.com/project/utilitary",

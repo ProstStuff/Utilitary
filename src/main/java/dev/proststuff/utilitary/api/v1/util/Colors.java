@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.v1.utility;
+package dev.proststuff.utilitary.api.v1.util;
 
 public interface Colors {
     ColorRGB RED = new ColorRGB(0xFF0000).setImmutable();

@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.v1.client.gui;
+package dev.proststuff.utilitary.api.v1.client;
 
 public interface Tickable {
     boolean canTick();

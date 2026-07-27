@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.v1.utility;
+package dev.proststuff.utilitary.api.v1.util;
 
 import java.util.ArrayList;
 import java.util.List;

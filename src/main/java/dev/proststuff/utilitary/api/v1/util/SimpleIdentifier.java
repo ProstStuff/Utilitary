@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.v1.utility;
+package dev.proststuff.utilitary.api.v1.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;

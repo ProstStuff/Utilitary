@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
 import dev.proststuff.utilitary.Utilitary;
-import dev.proststuff.utilitary.api.v1.utility.SimpleIdentifier;
+import dev.proststuff.utilitary.api.v1.util.SimpleIdentifier;
 import dev.proststuff.utilitary.config.v1.serialization.format.ConfigFormat;
 import dev.proststuff.utilitary.config.v1.serialization.metadata.ConfigMetadata;
 import dev.proststuff.utilitary.config.v1.serialization.metadata.ConfigMetadataType;

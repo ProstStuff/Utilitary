@@ -3,7 +3,7 @@ package dev.proststuff.utilitary;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.proststuff.utilitary.api.v1.utility.SimpleIdentifier;
+import dev.proststuff.utilitary.api.v1.util.SimpleIdentifier;
 import dev.proststuff.utilitary.config.v1.ConfigCodec;
 import dev.proststuff.utilitary.config.v1.ConfigManager;
 import dev.proststuff.utilitary.config.v1.ConfigResult;

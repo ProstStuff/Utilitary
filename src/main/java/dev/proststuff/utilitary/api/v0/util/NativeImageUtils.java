@@ -1,4 +1,4 @@
-package dev.proststuff.utilitary.api.v0.utility;
+package dev.proststuff.utilitary.api.v0.util;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.proststuff.utilitary.Utilitary;

@@ -1,7 +1,7 @@
 package dev.proststuff.utilitary;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +14,11 @@ public class Utilitary implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		CONFIG = UtilitaryConfig.load();
-		UtilitaryConfig.save();
+
+		ClientLifecycleEvents.CLIENT_STARTED.register((_) -> UtilitaryConfig.save());
 	}
 
 	public static Identifier of(String path) {
 		return Identifier.fromNamespaceAndPath(ID, path);
-	}
-
-	public static boolean isDevelopmentEnvironment() {
-		return FabricLoader.getInstance().isDevelopmentEnvironment();
 	}
 }

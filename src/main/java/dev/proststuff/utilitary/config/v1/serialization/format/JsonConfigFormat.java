@@ -3,7 +3,7 @@ package dev.proststuff.utilitary.config.v1.serialization.format;
 import com.google.gson.*;
 import dev.proststuff.utilitary.config.v1.ConfigType;
 import dev.proststuff.utilitary.config.v1.serialization.metadata.ConfigMetadata;
-import dev.proststuff.utilitary.api.v1.utility.SimpleIdentifier;
+import dev.proststuff.utilitary.api.v1.util.SimpleIdentifier;
 import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
