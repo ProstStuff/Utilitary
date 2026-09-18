@@ -13,6 +13,7 @@ import java.util.Map;
 public abstract class MultiFocusScreen extends Screen {
     public static final Identifier DEFAULT_GROUP = Identifier.withDefaultNamespace("default");
 
+    protected GuiEventListener recentlyFocused = null;
     protected Map<Identifier, GuiEventListener> focusedWidgets = new HashMap<>();
 
     protected MultiFocusScreen(Component title) {
@@ -24,6 +25,7 @@ public abstract class MultiFocusScreen extends Screen {
     }
 
     public void setFocused(@NonNull Identifier group, @Nullable GuiEventListener focused) {
+        if (focused instanceof Focusable focusable && !focusable.isFocusable()) return;
         GuiEventListener lastFocused = getFocused(group);
 
         if (lastFocused != focused) {
@@ -36,6 +38,7 @@ public abstract class MultiFocusScreen extends Screen {
             }
 
             focusedWidgets.put(group, focused);
+            recentlyFocused = focused;
         }
     }
 
@@ -45,10 +48,9 @@ public abstract class MultiFocusScreen extends Screen {
         }
     }
 
-    @Deprecated
     @Override
     public @Nullable GuiEventListener getFocused() {
-        return getFocused(DEFAULT_GROUP);
+        return recentlyFocused;
     }
 
     @Override

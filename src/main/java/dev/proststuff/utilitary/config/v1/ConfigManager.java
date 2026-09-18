@@ -14,10 +14,60 @@ import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({"LoggingSimilarMessage", "unused"})
 public interface ConfigManager extends ConfigConstants {
+    static <C, M extends ConfigMetadata, F> @NonNull ConfigResult<C, M> read(SimpleIdentifier fileName, ConfigType<C, M, F> type, JsonObject root) {
+        JsonElement jsonMetadata;
+
+        if (root.get(METADATA_KEY) != null) {
+            jsonMetadata = root.remove(METADATA_KEY);
+        } else {
+            jsonMetadata = new JsonPrimitive(0);
+        }
+
+        M metadata = type.metadata().codec().parse(JsonOps.INSTANCE, jsonMetadata).getOrThrow();
+
+        JsonElement data = root.has(DATA_KEY) ? root.get(DATA_KEY) : new JsonObject();
+
+        if (data instanceof JsonObject object) {
+            Iterator<Map.Entry<String, JsonElement>> iterator = root.asMap().entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<String, JsonElement> entry = iterator.next();
+                boolean valid = entry.getKey().equals(DATA_KEY) || entry.getKey().equals(METADATA_KEY);
+
+                if (!valid) {
+                    object.add(entry.getKey(), entry.getValue());
+                    iterator.remove();
+                }
+            }
+        }
+
+        List<ConfigType.Migration> migrations = type.migrations();
+        int version = metadata.version();
+
+        while (version < type.version()) {
+            ConfigType.Migration migration = migrations.get(version);
+
+            if (migration == null) throw new IllegalStateException("Missing migration for version " + version);
+            data = migration.migrate(new ConfigType.Migration.Context(fileName, data, version));
+            version ++;
+        }
+
+        ConfigCodec<C> codec = type.codec();
+        return new ConfigResult<>(
+                codec.getCodec()
+                        .parse(JsonOps.INSTANCE, data)
+                        .getOrThrow(),
+                metadata,
+                ConfigStatus.SUCCESS
+        );
+    }
+
     static <C, M extends ConfigMetadata, F> @NonNull ConfigResult<C, M> load(SimpleIdentifier fileName, ConfigType<C, M, F> type) {
         return load(fileName, type, type.format().create(fileName, type));
     }
@@ -32,45 +82,7 @@ public interface ConfigManager extends ConfigConstants {
 
         try {
             if (Files.notExists(path)) return ConfigResult.of(fileName, type, ConfigStatus.NOT_EXIST);
-            ConfigMetadataType<M> metadataType = type.metadata();
-
-            JsonObject root = type.format().read(path, formatSettings).getAsJsonObject();
-            JsonElement jsonMetadata;
-
-            if (root.get(METADATA_KEY) != null) {
-                jsonMetadata = root.remove(METADATA_KEY);
-            } else {
-                jsonMetadata = new JsonPrimitive(0);
-            }
-
-            M metadata = metadataType.codec().parse(JsonOps.INSTANCE, jsonMetadata).getOrThrow();
-            JsonElement data;
-
-            if (root.has(DATA_KEY)) {
-                data = root.remove(DATA_KEY);
-            } else {
-                data = root;
-            }
-
-            List<ConfigType.Migration> migrations = type.migrations();
-            int version = metadata.version();
-
-            while (version < type.version()) {
-                ConfigType.Migration migration = migrations.get(version);
-
-                if (migration == null) throw new IllegalStateException("Missing migration for version " + version);
-                data = migration.migrate(new ConfigType.Migration.Context(fileName, data, version));
-                version ++;
-            }
-
-            ConfigCodec<C> codec = type.codec();
-            return new ConfigResult<>(
-                    codec.getCodec()
-                            .parse(JsonOps.INSTANCE, data)
-                            .getOrThrow(),
-                    metadata,
-                    ConfigStatus.SUCCESS
-            );
+            return read(fileName, type, type.format().read(path, formatSettings).getAsJsonObject());
         } catch (Exception e) {
             Utilitary.LOGGER.warn("[UTILITARY CONFIG] Unable to read {}, assume corrupted file:", fileName, e);
             return new ConfigResult<>(
@@ -114,8 +126,12 @@ public interface ConfigManager extends ConfigConstants {
     static boolean delete(SimpleIdentifier fileName, ConfigType<?, ?, ?> type) {
         try {
             Path path = toPath(fileName, type.format());
-            if (Files.exists(path)) Files.delete(path);
-            return true;
+            if (Files.exists(path)) {
+                Files.delete(path);
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             Utilitary.LOGGER.warn("[UTILITARY CONFIG] Unable to delete {}", fileName, e);
             return false;

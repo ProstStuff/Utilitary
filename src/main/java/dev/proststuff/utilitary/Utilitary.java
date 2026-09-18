@@ -14,7 +14,6 @@ public class Utilitary implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		CONFIG = UtilitaryConfig.load();
-
 		ClientLifecycleEvents.CLIENT_STARTED.register((_) -> UtilitaryConfig.save());
 	}
 

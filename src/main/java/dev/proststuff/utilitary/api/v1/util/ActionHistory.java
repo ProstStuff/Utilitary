@@ -9,7 +9,7 @@ public class ActionHistory {
 
     public ActionHistory() {}
 
-    public void perform(Action action) {
+    public void run(Action action) {
         while (actions.size() > index + 1) {
             actions.removeLast();
         }
@@ -24,7 +24,6 @@ public class ActionHistory {
         if (!canUndo()) return false;
         actions.get(index).undo().run();
         index--;
-
         return true;
     }
 
@@ -32,7 +31,6 @@ public class ActionHistory {
         if (!canRedo()) return false;
         index++;
         actions.get(index).redo().run();
-
         return true;
     }
 
@@ -57,6 +55,5 @@ public class ActionHistory {
         return index;
     }
 
-    public record Action(Runnable redo, Runnable undo) {
-    }
+    public record Action(Runnable redo, Runnable undo) {}
 }

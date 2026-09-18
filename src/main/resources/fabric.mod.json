@@ -27,8 +27,9 @@
 	"custom": {
 		"modmenu": {
 			"links": {
+				"modmenu.patreon": "https://www.patreon.com/cw/Fraynn",
 				"modmenu.modrinth": "https://modrinth.com/mod/utilitary",
-				"modmenu.youtube": "https://www.youtube.com/@ProstStuff"
+				"modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/utilitary"
 			},
 			"update_checker": true,
 			"badges": [
