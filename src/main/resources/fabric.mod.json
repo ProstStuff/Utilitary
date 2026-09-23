@@ -28,8 +28,7 @@
 		"modmenu": {
 			"links": {
 				"modmenu.patreon": "https://www.patreon.com/cw/Fraynn",
-				"modmenu.modrinth": "https://modrinth.com/mod/utilitary",
-				"modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/utilitary"
+				"modmenu.modrinth": "https://modrinth.com/mod/utilitary"
 			},
 			"update_checker": true,
 			"badges": [
