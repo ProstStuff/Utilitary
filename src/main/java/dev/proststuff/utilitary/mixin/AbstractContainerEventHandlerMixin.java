@@ -1,6 +1,6 @@
 package dev.proststuff.utilitary.mixin;
 
-import dev.proststuff.utilitary.api.v1.client.gui.Focusable;
+import dev.proststuff.utilitary.client.gui.Focusable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.spongepowered.asm.mixin.Mixin;

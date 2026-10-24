@@ -1,12 +1,11 @@
 package dev.proststuff.utilitary.mixin;
 
-import dev.proststuff.utilitary.api.v1.client.gui.Parentable;
-import dev.proststuff.utilitary.api.v1.client.gui.ScreenAutoParentable;
-import dev.proststuff.utilitary.api.v1.client.Tickable;
+import dev.proststuff.utilitary.client.gui.Parentable;
+import dev.proststuff.utilitary.client.gui.ScreenAutoParentable;
+import dev.proststuff.utilitary.util.Tickable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,10 +19,6 @@ import java.util.List;
 public abstract class ScreenMixin {
     @Shadow
     public abstract List<? extends GuiEventListener> children();
-
-    @Shadow
-    @Final
-    private List<GuiEventListener> children;
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void utilitary$tick(CallbackInfo ci) {

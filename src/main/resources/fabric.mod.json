@@ -11,14 +11,13 @@
 		"issues": "https://github.com/ProstStuff/Utilitary/issues"
 	},
 	"license": "MIT",
-	"icon": "assets/utilitary/icon.png",
+	"icon": "assets/utilitary/textures/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.proststuff.utilitary.Utilitary"],
-		"modmenu": ["dev.proststuff.utilitary.client.compat.UtilitaryModMenu"]
+		"main": ["dev.proststuff.utilitary.Utilitary"]
 	},
 	"depends": {
-		"fabricloader": ">=0.19.2",
+		"fabricloader": ">=0.19.5",
 		"minecraft": "~26.1",
 		"java": ">=25",
 		"fabric-api": "*"
@@ -27,7 +26,7 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.patreon": "https://www.patreon.com/cw/Fraynn",
+				"modmenu.discord": "https://discord.gg/C82atdWT2w",
 				"modmenu.modrinth": "https://modrinth.com/mod/utilitary"
 			},
 			"update_checker": true,
