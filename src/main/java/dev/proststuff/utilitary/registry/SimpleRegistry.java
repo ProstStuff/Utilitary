@@ -47,7 +47,7 @@ public class SimpleRegistry<K, V> {
         values.add(value);
         keys.add(key);
         entries.add(new Entry<>(key, value));
-        if (values.size() != keys.size()) throw new IllegalStateException("Unbalanced registry entry size! There are " + keys.size() + " keys," + values.size() + " values, and " + entries.size() + " entries");
+        if (values.size() != keys.size() && keys.size() != entries().size()) throw new IllegalStateException("Unbalanced registry entry size! There are " + keys.size() + " keys," + values.size() + " values, and " + entries.size() + " entries");
         return value;
     }
 

@@ -9,6 +9,12 @@ public class RemovableSimpleRegistry<K, V> extends SimpleRegistry<K, V> {
         this(false);
     }
 
+    @Override
+    public V register(K key, V value) {
+        if (keys.contains(key)) unregister(key);
+        return super.register(key, value);
+    }
+
     public V unregister(K key) {
         int i = keys.indexOf(key);
         keys.remove(i);
