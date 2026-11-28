@@ -403,11 +403,11 @@ public class Json5Ops implements DynamicOps<Json5Element> {
 
     @Override
     public RecordBuilder<Json5Element> mapBuilder() {
-        return new JsonRecordBuilder();
+        return new Json5RecordBuilder();
     }
 
-    private class JsonRecordBuilder extends RecordBuilder.AbstractStringBuilder<Json5Element, Json5Object> {
-        protected JsonRecordBuilder() {
+    private class Json5RecordBuilder extends RecordBuilder.AbstractStringBuilder<Json5Element, Json5Object> {
+        protected Json5RecordBuilder() {
             super(Json5Ops.this);
         }
 
